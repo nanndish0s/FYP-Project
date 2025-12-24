@@ -128,6 +128,117 @@ export const HomePage: React.FC = () => {
                 </div>
             </section>
 
+            {/* Animated Process Visualization */}
+            <section className="bg-gradient-to-r from-primary-600 via-violet-600 to-purple-600 py-20 overflow-hidden">
+                <div className="container mx-auto px-4">
+                    <div className="text-center mb-12">
+                        <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
+                            See It In Action
+                        </h2>
+                        <p className="text-lg text-purple-100 max-w-xl mx-auto">
+                            Watch how Vocalytics processes your voice response in real-time
+                        </p>
+                    </div>
+
+                    {/* Animated Pipeline */}
+                    <div className="max-w-5xl mx-auto">
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-0">
+                            {/* Step 1: User Speaking */}
+                            <div className="flex flex-col items-center animate-process-step" style={{ animationDelay: '0s' }}>
+                                <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mb-3 relative">
+                                    <Mic className="w-10 h-10 text-white" />
+                                    <div className="absolute inset-0 border-4 border-white/30 rounded-full animate-ping"></div>
+                                </div>
+                                <span className="text-white font-semibold text-sm">User Speaks</span>
+                            </div>
+
+                            {/* Arrow */}
+                            <div className="hidden md:flex items-center">
+                                <div className="w-16 h-1 bg-white/30 relative overflow-hidden">
+                                    <div className="absolute inset-0 bg-white animate-flow-right"></div>
+                                </div>
+                                <ArrowRight className="w-6 h-6 text-white/70" />
+                            </div>
+
+                            {/* Step 2: Voice Waves */}
+                            <div className="flex flex-col items-center animate-process-step" style={{ animationDelay: '1s' }}>
+                                <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mb-3">
+                                    <div className="flex items-end gap-0.5 h-10">
+                                        <div className="w-1 bg-white rounded-full animate-wave-bar" style={{ height: '40%', animationDelay: '0ms' }}></div>
+                                        <div className="w-1 bg-white rounded-full animate-wave-bar" style={{ height: '70%', animationDelay: '100ms' }}></div>
+                                        <div className="w-1 bg-white rounded-full animate-wave-bar" style={{ height: '100%', animationDelay: '200ms' }}></div>
+                                        <div className="w-1 bg-white rounded-full animate-wave-bar" style={{ height: '60%', animationDelay: '300ms' }}></div>
+                                        <div className="w-1 bg-white rounded-full animate-wave-bar" style={{ height: '80%', animationDelay: '400ms' }}></div>
+                                    </div>
+                                </div>
+                                <span className="text-white font-semibold text-sm">Voice Captured</span>
+                            </div>
+
+                            {/* Arrow */}
+                            <div className="hidden md:flex items-center">
+                                <div className="w-16 h-1 bg-white/30 relative overflow-hidden">
+                                    <div className="absolute inset-0 bg-white animate-flow-right" style={{ animationDelay: '1s' }}></div>
+                                </div>
+                                <ArrowRight className="w-6 h-6 text-white/70" />
+                            </div>
+
+                            {/* Step 3: Transcription */}
+                            <div className="flex flex-col items-center animate-process-step" style={{ animationDelay: '2s' }}>
+                                <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mb-3">
+                                    <div className="text-white text-xs font-mono animate-pulse">
+                                        <div>abc...</div>
+                                        <div className="animate-typing overflow-hidden whitespace-nowrap">text</div>
+                                    </div>
+                                </div>
+                                <span className="text-white font-semibold text-sm">Transcribed</span>
+                            </div>
+
+                            {/* Arrow */}
+                            <div className="hidden md:flex items-center">
+                                <div className="w-16 h-1 bg-white/30 relative overflow-hidden">
+                                    <div className="absolute inset-0 bg-white animate-flow-right" style={{ animationDelay: '2s' }}></div>
+                                </div>
+                                <ArrowRight className="w-6 h-6 text-white/70" />
+                            </div>
+
+                            {/* Step 4: AI Analysis */}
+                            <div className="flex flex-col items-center animate-process-step" style={{ animationDelay: '3s' }}>
+                                <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mb-3">
+                                    <Brain className="w-10 h-10 text-white animate-pulse" />
+                                </div>
+                                <span className="text-white font-semibold text-sm">AI Analyzes</span>
+                            </div>
+
+                            {/* Arrow */}
+                            <div className="hidden md:flex items-center">
+                                <div className="w-16 h-1 bg-white/30 relative overflow-hidden">
+                                    <div className="absolute inset-0 bg-white animate-flow-right" style={{ animationDelay: '3s' }}></div>
+                                </div>
+                                <ArrowRight className="w-6 h-6 text-white/70" />
+                            </div>
+
+                            {/* Step 5: Scores */}
+                            <div className="flex flex-col items-center animate-process-step" style={{ animationDelay: '4s' }}>
+                                <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mb-3">
+                                    <div className="text-white text-center">
+                                        <TrendingUp className="w-8 h-8 mx-auto animate-bounce" />
+                                        <div className="text-xs font-bold mt-1">C3</div>
+                                    </div>
+                                </div>
+                                <span className="text-white font-semibold text-sm">Scores Ready</span>
+                            </div>
+                        </div>
+
+                        {/* Process description */}
+                        <div className="mt-12 text-center">
+                            <p className="text-purple-100 text-sm max-w-2xl mx-auto">
+                                The entire process takes just seconds — from your spoken response to detailed C3 skill scores with SHAP-powered explanations
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* Skills Section */}
             <section className="bg-gradient-to-br from-gray-50 to-blue-50 py-20">
                 <div className="container mx-auto px-4">
