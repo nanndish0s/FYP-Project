@@ -1,0 +1,21 @@
+
+# Data Manipulation
+numpy
+pandas
+tqdm
+h5py
+
+# Audio Processing
+librosa
+soundfile
+scipy
+
+# Machine Learning
+scikit-learn
+shap
+matplotlib
+seaborn
+
+# Deep Learning / Embeddings (Optional for now, but good to have)
+torch
+streamlit

@@ -1,0 +1,28 @@
+trait,category,description,avg_impact,total_impact,num_features
+Creativity,Vocabulary & Word Choice,Lexical sophistication,0.035894552207052205,0.14357820882820882,4
+Creativity,Speech Structure,Sentence and speech organization,0.030004538109837033,0.12001815243934813,4
+Creativity,Engagement Indicators,Curiosity and interaction markers,0.01170546393130934,0.03511639179392802,3
+Creativity,Fluency & Hesitation,Speaking smoothness,0.004254966852792939,0.012764900558378818,3
+Creativity,Voice Quality,Voicing characteristics and clarity,0.0024539302562315256,0.3263727240787929,133
+Creativity,Energy & Dynamics,Speaking intensity and variation,0.0015253099212726542,0.1494803722847201,98
+Creativity,Spectral Characteristics,Harmonic and spectral richness,0.0007708591549392321,0.21584056338298496,280
+Creativity,Pitch & Intonation,Fundamental frequency patterns (F0),0.00027795031055900625,0.0019456521739130437,7
+Creativity,Readability & Complexity,Speech comprehension difficulty,0.00027681188913072983,0.0008304356673921895,3
+Critical Thinking,Vocabulary & Word Choice,Lexical sophistication,0.0060451510043901336,0.024180604017560534,4
+Critical Thinking,Fluency & Hesitation,Speaking smoothness,0.00588224121557455,0.01764672364672365,3
+Critical Thinking,Speech Structure,Sentence and speech organization,0.004584013879303734,0.018336055517214934,4
+Critical Thinking,Voice Quality,Voicing characteristics and clarity,0.0029196446859944365,0.38831274323726006,133
+Critical Thinking,Spectral Characteristics,Harmonic and spectral richness,0.00210965918802142,0.5907045726459976,280
+Critical Thinking,Energy & Dynamics,Speaking intensity and variation,0.001030573207770536,0.10099617436151252,98
+Critical Thinking,Pitch & Intonation,Fundamental frequency patterns (F0),0.00043315587104406994,0.0030320910973084896,7
+Critical Thinking,Engagement Indicators,Curiosity and interaction markers,0.0,0.0,3
+Critical Thinking,Readability & Complexity,Speech comprehension difficulty,0.0,0.0,3
+Curiosity,Vocabulary & Word Choice,Lexical sophistication,0.007195430542350831,0.028781722169403324,4
+Curiosity,Fluency & Hesitation,Speaking smoothness,0.005260828275321029,0.01578248482596309,3
+Curiosity,Speech Structure,Sentence and speech organization,0.004992112456786368,0.019968449827145473,4
+Curiosity,Voice Quality,Voicing characteristics and clarity,0.0019579002977671753,0.26040073960303434,133
+Curiosity,Spectral Characteristics,Harmonic and spectral richness,0.0017235893139813945,0.48260500791479044,280
+Curiosity,Energy & Dynamics,Speaking intensity and variation,0.000776774688690542,0.07612391949167312,98
+Curiosity,Pitch & Intonation,Fundamental frequency patterns (F0),0.0,0.0,7
+Curiosity,Engagement Indicators,Curiosity and interaction markers,0.0,0.0,3
+Curiosity,Readability & Complexity,Speech comprehension difficulty,0.0,0.0,3
