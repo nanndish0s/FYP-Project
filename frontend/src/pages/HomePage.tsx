@@ -21,6 +21,20 @@ export const HomePage: React.FC = () => {
                             <span className="text-sm font-semibold">AI-Powered Recruitment Innovation</span>
                         </div>
 
+                        {/* Animated Speaking Visualization */}
+                        <div className="flex items-center justify-center mb-8 relative">
+                            <div className="relative w-32 h-32 flex items-center justify-center">
+                                {/* Breathing glow circles */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-yellow-300 to-pink-300 rounded-full blur-2xl animate-breathing opacity-40"></div>
+                                <div className="absolute inset-0 bg-gradient-to-r from-pink-300 to-purple-300 rounded-full blur-xl animate-breathing opacity-30" style={{ animationDelay: '1s' }}></div>
+
+                                {/* Center microphone with pulse */}
+                                <div className="relative z-10 w-20 h-20 bg-gradient-to-br from-white/30 to-white/10 backdrop-blur-md rounded-full flex items-center justify-center border-2 border-white/50 shadow-2xl animate-pulse-gentle">
+                                    <Mic className="w-10 h-10 text-white drop-shadow-lg" />
+                                </div>
+                            </div>
+                        </div>
+
                         <h1 className="text-6xl md:text-7xl font-extrabold mb-6 leading-tight">
                             Voice-Based
                             <span className="block bg-gradient-to-r from-yellow-200 to-pink-200 bg-clip-text text-transparent">
@@ -30,6 +44,10 @@ export const HomePage: React.FC = () => {
 
                         <p className="text-xl md:text-2xl text-purple-100 mb-10 max-w-2xl mx-auto leading-relaxed">
                             Evaluate <strong>Curiosity, Critical Thinking & Creativity</strong> through advanced voice analysis with Explainable AI for transparent, fair hiring
+                        </p>
+
+                        <p className="text-sm text-purple-200/80 mb-8">
+                            Project by <strong>Nanndish Satgunarjah (CB011248)</strong> | Supervisor: <strong>Dr. Tharanga Peires</strong>
                         </p>
 
                         <div className="flex flex-col sm:flex-row justify-center gap-4">
