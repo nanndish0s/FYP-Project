@@ -46,7 +46,7 @@ const Navigation: React.FC = () => {
               <Mic className="w-6 h-6 text-white" />
             </div>
             <span className="text-xl font-bold text-gray-900">
-              Voice XAI Recruit
+              Vocalytics
             </span>
           </Link>
 
@@ -121,7 +121,7 @@ const NavLink: React.FC<NavLinkProps> = ({ to, icon, label, active }) => (
 const Footer: React.FC = () => (
   <footer className="bg-white border-t border-gray-200 py-8 mt-12">
     <div className="container mx-auto px-4 text-center text-gray-600">
-      <p className="font-semibold mb-2">Voice-Based Explainable AI for Recruitment</p>
+      <p className="font-semibold mb-2">Vocalytics - Voice-Based Explainable AI for Recruitment</p>
       <p className="text-sm">Final Year Project | Software Engineering Soft Skills Assessment</p>
       <p className="text-sm mt-2">Using Random Forest + SHAP for Transparent, Fair Hiring</p>
     </div>

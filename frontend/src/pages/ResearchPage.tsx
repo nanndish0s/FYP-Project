@@ -199,22 +199,22 @@ export const ResearchPage: React.FC = () => {
                     isExpanded={expandedSection === 'questions'}
                     onToggle={() => toggleSection('questions')}
                 >
-                    <div className="space-y-8">
-                        <div>
-                            <div className="bg-gradient-to-r from-primary-500 to-violet-500 rounded-xl p-8 text-white shadow-xl mb-6">
-                                <h3 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                                    <Target className="w-6 h-6" />
-                                    Research Aim
-                                </h3>
-                                <p className="text-lg leading-relaxed">
-                                    To design, develop, and validate a novel explainable AI framework capable of assessing a candidate's Curiosity, Critical Thinking, and Creativity from their spoken responses during a job interview.
-                                </p>
-                            </div>
+                    <div className="space-y-6">
+                        {/* Research Aim */}
+                        <div className="bg-primary-600 rounded-lg p-5 shadow-lg">
+                            <h3 className="text-lg font-bold mb-2 flex items-center gap-2 text-white">
+                                <Target className="w-5 h-5 text-white" />
+                                Research Aim
+                            </h3>
+                            <p className="leading-relaxed text-sm text-white opacity-90">
+                                To design, develop, and validate a novel explainable AI framework capable of assessing a candidate's Curiosity, Critical Thinking, and Creativity from their spoken responses during a job interview.
+                            </p>
                         </div>
 
+                        {/* Research Questions */}
                         <div>
-                            <h3 className="text-2xl font-bold text-gray-900 mb-6">Research Questions</h3>
-                            <div className="space-y-4">
+                            <h3 className="text-lg font-bold text-gray-900 mb-4">Research Questions</h3>
+                            <div className="space-y-3">
                                 <ResearchQuestion
                                     number="RQ1"
                                     question="To what extent can features extracted from a candidate's spoken responses and interaction patterns be used to reliably model and predict their levels of Curiosity, Critical Thinking, and Creativity?"
@@ -347,14 +347,14 @@ const ContributionCard: React.FC<{ title: string; subtitle: string; description:
 );
 
 const ResearchQuestion: React.FC<{ number: string; question: string }> = ({ number, question }) => (
-    <div className="bg-gradient-to-r from-gray-50 to-blue-50 border-l-4 border-primary-500 p-4 rounded-xl shadow-md hover:shadow-lg transition-shadow">
+    <div className="bg-white border border-gray-200 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow">
         <div className="flex items-start gap-3">
-            <div className="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg">
-                <span className="font-bold text-white text-sm">{number.replace('RQ', '')}</span>
+            <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-violet-500 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="font-bold text-white text-xs">{number.replace('RQ', '')}</span>
             </div>
-            <div>
-                <span className="font-bold text-primary-700 block mb-1.5">{number}</span>
-                <p className="text-gray-800 leading-relaxed text-sm">{question}</p>
+            <div className="flex-1">
+                <span className="font-semibold text-primary-600 text-sm">{number}</span>
+                <p className="text-gray-700 leading-relaxed text-sm mt-1">{question}</p>
             </div>
         </div>
     </div>
