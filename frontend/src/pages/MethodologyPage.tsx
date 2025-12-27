@@ -1,5 +1,5 @@
 import React from 'react';
-import { Mic, Activity, Brain, BarChart, ArrowRight, Settings, Sparkles, Zap, Target } from 'lucide-react';
+import { Mic, Activity, Brain, BarChart, Settings, Sparkles, Zap, Target } from 'lucide-react';
 
 export const MethodologyPage: React.FC = () => {
     return (
@@ -288,7 +288,7 @@ interface DetailedStepProps {
     content: React.ReactNode;
 }
 
-const DetailedStep: React.FC<DetailedStepProps> = ({ number, title, icon, iconGradient, content }) => (
+const DetailedStep: React.FC<DetailedStepProps> = ({ number, title, iconGradient, content }) => (
     <div className="bg-white p-8 md:p-10 rounded-2xl shadow-xl border-2 border-gray-100 hover:shadow-2xl transition-shadow">
         <div className="flex flex-col md:flex-row gap-6 mb-6">
             <div className="flex-shrink-0">

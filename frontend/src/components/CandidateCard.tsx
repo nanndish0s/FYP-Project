@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Candidate } from '../services/api';
-import { TrendingUp } from 'lucide-react';
+
 
 interface CandidateCardProps {
     candidate: Candidate;

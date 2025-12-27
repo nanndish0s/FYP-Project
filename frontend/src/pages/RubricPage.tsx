@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BookOpen, Search, Brain, Lightbulb, ChevronDown, ChevronUp, Award } from 'lucide-react';
+import { Search, Brain, Lightbulb, ChevronDown, ChevronUp, Award } from 'lucide-react';
 
 export const RubricPage: React.FC = () => {
     const [expandedSection, setExpandedSection] = useState<string>('curiosity');
