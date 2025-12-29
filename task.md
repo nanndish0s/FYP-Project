@@ -17,6 +17,14 @@
     *   [ ] **Training**: Train Random Forest Regressor (Input: Aggregated Audio+Lexical -> Output: 3 Scores).
     *   [ ] **Tuning**: Grid Search for hyperparameters (Trees, Depth).
 
+- [x] Initial Exploration
+    - [x] Read README.md
+    - [x] Explore backend structure
+    - [x] Explore frontend structure
+- [/] Deep Dive into Core Logic
+    - [/] Analyze entry points (backend/app.py) [ ]
+    - [ ] Analyze feature extraction scripts [ ]
+
 - [ ] **Phase 4: Explainable AI (XAI) Integration**
     - [ ] Implement **TreeExplainer** (SHAP optimized for Random Forests).
     - [ ] Generate Feature Importance & Waterfall plots.
