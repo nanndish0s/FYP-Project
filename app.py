@@ -94,11 +94,22 @@ with tab1:
     def load_models():
         """Load trained models and SHAP explainers"""
         models = {}
-        for trait in ['curiosity_score', 'critical_thinking_score', 'creativity_score']:
-            with open(f'models/{trait}_model.pkl', 'rb') as f:
-                models[trait] = pickle.load(f)
+        for trait in ['curiosity', 'critical_thinking', 'creativity']:
+            # Try to load 44-sample model, fall back to original
+            model_file = f'models/{trait}_model_44.pkl'
+            if not os.path.exists(model_file):
+                model_file = f'models/{trait}_score_model.pkl'
+            
+            with open(model_file, 'rb') as f:
+                models[trait + '_score'] = pickle.load(f)
         
-        with open('results/shap_explainers.pkl', 'rb') as f:
+        # Load SHAP explainers
+        # Check if 44-sample version exists
+        shap_file = 'results/shap_explainers_44.pkl'
+        if not os.path.exists(shap_file):
+            shap_file = 'results/shap_explainers.pkl'
+            
+        with open(shap_file, 'rb') as f:
             shap_results = pickle.load(f)
         
         return models, shap_results

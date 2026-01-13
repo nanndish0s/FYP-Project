@@ -21,9 +21,12 @@
     - [x] Read README.md
     - [x] Explore backend structure
     - [x] Explore frontend structure
-- [/] Deep Dive into Core Logic
-    - [/] Analyze entry points (backend/app.py) [ ]
-    - [ ] Analyze feature extraction scripts [ ]
+- [x] Deep Dive into Core Logic
+    - [x] Analyze entry points (backend/app.py)
+    - [x] Analyze feature extraction scripts
+    - [x] Understand model training and inference
+- [x] Review Deployment Context (from previous conversations)
+- [x] Final Summary
 
 - [ ] **Phase 4: Explainable AI (XAI) Integration**
     - [ ] Implement **TreeExplainer** (SHAP optimized for Random Forests).
