@@ -25,7 +25,21 @@
     - [x] Analyze entry points (backend/app.py)
     - [x] Analyze feature extraction scripts
     - [x] Understand model training and inference
+- [x] Refine Dataset Metadata Mapping
+    - [x] Decouple Curiosity and Creativity in `ingest_recruitview.py`
+    - [x] Retrain models for finalized scoring baseline
 - [x] Review Deployment Context (from previous conversations)
+- [x] Integrate RecruitView models (2,011 samples) and 37-feature pipeline
+    - [x] Update `backend/app.py` for 37-feature extraction and model loading
+    - [x] Align `src/features/extract_live_features.py` with RecruitView schema
+    - [x] Update Streamlit frontend (`app.py`, `src/app_live_tab.py`) for production models
+    - [x] Handle missing metadata/reasoning in `recruitview_metadata.csv`
+- [x] Verify End-to-End Prediction Flow
+- [x] Debug Live Assessment Score Discrepancy
+    - [x] Compare live feature ranges with training data distribution
+    - [x] Audit vocal vs lexical feature weights in production models
+    - [x] Refine LiveFeatureExtractor normalization if needed
+- [x] Final Presentation Prep (Walkthrough update)
 - [x] Final Summary
 
 - [ ] **Phase 4: Explainable AI (XAI) Integration**

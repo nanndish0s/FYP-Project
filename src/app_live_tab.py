@@ -88,22 +88,25 @@ def live_assessment_tab():
                 # Load models
                 models = {}
                 for trait in ['curiosity', 'critical_thinking', 'creativity']:
-                    model_file = f'models/{trait}_model_44.pkl'
+                    # Try to load RecruitView model first
+                    model_file = f'models/{trait}_model_recruitview.pkl'
                     if not os.path.exists(model_file):
-                        model_file = f'models/{trait}_score_model.pkl'
+                        model_file = f'models/{trait}_model_44.pkl'
+                        if not os.path.exists(model_file):
+                            model_file = f'models/{trait}_score_model.pkl'
+                    
                     with open(model_file, 'rb') as f:
                         models[trait] = pickle.load(f)
                 
-                # Load feature schema
-                ml_dataset_path = 'data/processed/ml_ready_dataset_44.csv'
+                # Load feature schema (Prioritize RecruitView 37-feature set)
+                ml_dataset_path = 'data/processed/recruitview_features_all.csv'
                 if not os.path.exists(ml_dataset_path):
                     ml_dataset_path = 'data/processed/ml_ready_dataset.csv'
+                
                 df_train = pd.read_csv(ml_dataset_path)
-                feature_cols = [col for col in df_train.columns 
-                               if col not in ['video_id', 'transcript', 'word_count',
-                                             'curiosity_score', 'critical_thinking_score', 
-                                             'creativity_score', 'curiosity_reasoning',
-                                             'critical_thinking_reasoning', 'creativity_reasoning']]
+                # Align with RecruitView 37-feature schema
+                exclude_cols = ['video_id', 'curiosity_score', 'critical_thinking_score', 'creativity_score', 'file_name']
+                feature_cols = [col for col in df_train.columns if col not in exclude_cols]
                 feature_means = df_train[feature_cols].mean().to_dict()
             
             # Step 1: Record with live feedback
@@ -169,21 +172,23 @@ def live_assessment_tab():
             with st.spinner("🔬 Extracting features..."):
                 features = feature_extractor.extract_all_features(audio_file, transcript)
                 
-                # Prepare feature vector
-                feature_vector = []
-                for feature_name in feature_cols:
-                    if feature_name in features:
-                        feature_vector.append(features[feature_name])
-                    else:
-                        feature_vector.append(feature_means.get(feature_name, 0))
-                feature_vector = np.array(feature_vector).reshape(1, -1)
+                # Prepare feature vector as DataFrame to ensure perfect feature name alignment
+                df_feats = pd.DataFrame([features])
+                # Add missing features with means (imputation)
+                for col in feature_cols:
+                    if col not in df_feats.columns:
+                        df_feats[col] = feature_means.get(col, 0)
+                
+                # Ensure exact column order and selection expected by the models
+                df_feats = df_feats[feature_cols]
                 progress_bar.progress(90)
             
             # Step 4: Predict
             with st.spinner("🎯 Predicting C3 scores..."):
                 predictions = {}
                 for trait_name, model in models.items():
-                    score = model.predict(feature_vector)[0]
+                    # Use DataFrame to avoid feature name alignment errors
+                    score = model.predict(df_feats)[0]
                     score = np.clip(score, 1, 5)  # Ensure valid range
                     predictions[trait_name] = score
                 progress_bar.progress(100)

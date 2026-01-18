@@ -20,85 +20,76 @@ class LiveFeatureExtractor:
         
     def extract_acoustic_features(self, audio_path):
         """
-        Extract simplified acoustic features from audio file using Librosa
-        
-        Extracts ~50 key features that approximate COVAREP features:
-        - Pitch (F0) statistics
-        - Spectral features
-        - MFCCs
-        - Energy features
-        
-        Args:
-            audio_path: Path to audio file
-            
-        Returns:
-            Dict of acoustic features
+        Extract simplified acoustic features from audio file using Librosa.
+        Aligned with mass_extract_recruitview.py (Prioritizes consistency with training data).
         """
         print("\n🎵 Extracting acoustic features...")
         
-        # Load audio
+        # Load audio at 16kHz
         y, sr = librosa.load(audio_path, sr=self.sample_rate)
         
         features = {}
         
-        # 1. Pitch (F0) features - most important for voice
-        f0 = librosa.yin(y, fmin=50, fmax=400)  # F0 estimation
-        f0_valid = f0[f0 > 0]  # Remove unvoiced frames
-        
-        if len(f0_valid) > 0:
-            features['f0_mean'] = np.mean(f0_valid)
-            features['f0_std'] = np.std(f0_valid)
-            features['f0_min'] = np.min(f0_valid)
-            features['f0_max'] = np.max(f0_valid)
-            features['f0_median'] = np.median(f0_valid)
-            features['f0_q25'] = np.percentile(f0_valid, 25)
-            features['f0_q75'] = np.percentile(f0_valid, 75)
-        else:
-            for stat in ['mean', 'std', 'min', 'max', 'median', 'q25', 'q75']:
-                features[f'f0_{stat}'] = 0
+        # 1. Pitch (Acoustic) - Use 50-500Hz range and include unvoiced frames in mean (matches training)
+        try:
+            pitches = librosa.yin(y, fmin=50, fmax=500)
+            features['pitch_mean'] = float(np.mean(pitches))
+            features['pitch_std'] = float(np.std(pitches))
+        except:
+            features['pitch_mean'] = 0
+            features['pitch_std'] = 0
         
         # 2. Spectral features
-        spectral_centroids = librosa.feature.spectral_centroid(y=y, sr=sr)[0]
-        spectral_rolloff = librosa.feature.spectral_rolloff(y=y, sr=sr)[0]
-        spectral_bandwidth = librosa.feature.spectral_bandwidth(y=y, sr=sr)[0]
+        spectral_centroids = librosa.feature.spectral_centroid(y=y, sr=sr)
+        features['spectral_centroid_mean'] = float(np.mean(spectral_centroids))
         
-        for name, values in [('centroid', spectral_centroids), 
-                              ('rolloff', spectral_rolloff),
-                              ('bandwidth', spectral_bandwidth)]:
-            features[f'spectral_{name}_mean'] = np.mean(values)
-            features[f'spectral_{name}_std'] = np.std(values)
-            features[f'spectral_{name}_min'] = np.min(values)
-            features[f'spectral_{name}_max'] = np.max(values)
+        # 3. Zero-crossing rate
+        zcr = librosa.feature.zero_crossing_rate(y)
+        features['zcr_mean'] = float(np.mean(zcr))
         
-        # 3. Zero-crossing rate (voice quality indicator)
-        zcr = librosa.feature.zero_crossing_rate(y)[0]
-        features['zcr_mean'] = np.mean(zcr)
-        features['zcr_std'] = np.std(zcr)
+        # 4. Energy (RMS) features
+        rms = librosa.feature.rms(y=y)
+        features['energy_mean'] = float(np.mean(rms))
+        features['energy_std'] = float(np.std(rms))
         
-        # 4. RMS energy
-        rms = librosa.feature.rms(y=y)[0]
-        features['rms_mean'] = np.mean(rms)
-        features['rms_std'] = np.std(rms)
-        
-        # 5. MFCCs (13 coefficients, most important for speech)
+        # 5. MFCCs (13 coefficients)
         mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13)
         for i in range(13):
-            features[f'mfcc_{i}_mean'] = np.mean(mfccs[i])
-            features[f'mfcc_{i}_std'] = np.std(mfccs[i])
+            features[f'mfcc_{i}_mean'] = float(np.mean(mfccs[i]))
+            features[f'mfcc_{i}_std'] = float(np.std(mfccs[i]))
         
         print(f"✅ Extracted {len(features)} acoustic features")
         return features
     
+    def extract_lexical_features(self, transcript):
+        """
+        Extracts lexical features using same logic as training (split() based).
+        """
+        if not transcript or not isinstance(transcript, str):
+            defaults = ['word_count', 'sentence_count', 'avg_word_length', 'vocab_diversity', 'filler_word_ratio']
+            return {k: 0 for k in defaults}
+            
+        words = transcript.lower().split()
+        sentences = [s.strip() for s in transcript.replace('!', '.').replace('?', '.').split('.') if s.strip()]
+        
+        word_count = len(words)
+        if word_count == 0:
+            return {'word_count':0, 'sentence_count':0, 'avg_word_length':0, 'vocab_diversity':0, 'filler_word_ratio':0}
+            
+        filler_words = {'um', 'uh', 'like', 'you know', 'so', 'actually', 'basically'}
+        filler_count = sum(1 for w in words if w in filler_words)
+        
+        return {
+            'word_count': word_count,
+            'sentence_count': len(sentences),
+            'avg_word_length': np.mean([len(w) for w in words]),
+            'vocab_diversity': len(set(words)) / word_count,
+            'filler_word_ratio': filler_count / word_count
+        }
+
     def extract_all_features(self, audio_path, transcript):
         """
         Extract all features from audio and transcript
-        
-        Args:
-            audio_path: Path to audio file
-            transcript: Transcribed text
-            
-        Returns:
-            Dict with all features
         """
         print("\n" + "=" * 70)
         print("EXTRACTING FEATURES FOR LIVE ASSESSMENT")
@@ -109,11 +100,18 @@ class LiveFeatureExtractor:
         
         # Lexical features
         print("\n📝 Extracting lexical features...")
-        lexical_features = extract_lexical(transcript)
+        lexical_features = self.extract_lexical_features(transcript)
         print(f"✅ Extracted {len(lexical_features)} lexical features")
         
         # Combine
         all_features = {**acoustic_features, **lexical_features}
+        
+        # Verbose Logging for Debugging
+        print("\n📊 FEATURE SUMMARY FOR PREDICTION:")
+        print(f"   - Pitch Mean: {all_features.get('pitch_mean', 0):.2f} Hz (Training Mean: ~205)")
+        print(f"   - Energy Mean: {all_features.get('energy_mean', 0):.4f} (Training Mean: ~0.04)")
+        print(f"   - Vocab Diversity: {all_features.get('vocab_diversity', 0):.4f} (Training Mean: ~0.74)")
+        print(f"   - Word Count: {all_features.get('word_count', 0)}")
         
         print(f"\n✅ Total features: {len(all_features)}")
         print("=" * 70)

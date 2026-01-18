@@ -84,9 +84,28 @@ with tab1:
     # Cache data loading
     @st.cache_data
     def load_data():
-        """Load all necessary data"""
-        df_full = pd.read_csv('data/processed/ml_ready_dataset.csv')
-        df_labels = pd.read_csv('data/processed/sample_with_c3_labels.csv')
+        """Load all necessary data (Prioritize RecruitView)"""
+        # Feature dataset (37 features + video_id)
+        df_full_path = 'data/processed/recruitview_features_all.csv'
+        if not os.path.exists(df_full_path):
+            df_full_path = 'data/processed/ml_ready_dataset.csv'
+            
+        # Metadata dataset (Transcript + Target scores)
+        df_labels_path = 'data/processed/recruitview_metadata.csv'
+        if not os.path.exists(df_labels_path):
+            df_labels_path = 'data/processed/sample_with_c3_labels.csv'
+            
+        df_full = pd.read_csv(df_full_path)
+        df_labels = pd.read_csv(df_labels_path)
+        
+        # Ensure column consistency for metadata
+        if 'curiosity' in df_labels.columns and 'curiosity_score' not in df_labels.columns:
+            df_labels = df_labels.rename(columns={
+                'curiosity': 'curiosity_score',
+                'critical_thinking': 'critical_thinking_score',
+                'creativity': 'creativity_score'
+            })
+            
         df_prosody = pd.read_csv('results/prosody_contributions.csv')
         return df_full, df_labels, df_prosody
 
@@ -95,10 +114,12 @@ with tab1:
         """Load trained models and SHAP explainers"""
         models = {}
         for trait in ['curiosity', 'critical_thinking', 'creativity']:
-            # Try to load 44-sample model, fall back to original
-            model_file = f'models/{trait}_model_44.pkl'
+            # Try to load RecruitView model, fall back to 44-sample, then original
+            model_file = f'models/{trait}_model_recruitview.pkl'
             if not os.path.exists(model_file):
-                model_file = f'models/{trait}_score_model.pkl'
+                model_file = f'models/{trait}_model_44.pkl'
+                if not os.path.exists(model_file):
+                    model_file = f'models/{trait}_score_model.pkl'
             
             with open(model_file, 'rb') as f:
                 models[trait + '_score'] = pickle.load(f)
@@ -170,7 +191,10 @@ with tab1:
     with st.spinner('🔄 Loading models and data...'):
         df_full, df_labels, df_prosody = load_data()
         models, shap_results = load_models()
-        feature_cols = [col for col in df_full.columns if col not in ['video_id', 'curiosity_score', 'critical_thinking_score', 'creativity_score']]
+        
+        # Align with RecruitView 37-feature schema
+        exclude_cols = ['video_id', 'curiosity_score', 'critical_thinking_score', 'creativity_score', 'file_name']
+        feature_cols = [col for col in df_full.columns if col not in exclude_cols]
 
     # Sidebar
     st.sidebar.title("📋 Candidate Selection")
@@ -265,35 +289,39 @@ with tab1:
         with tab:
             trait_name = trait.replace('_score', '').replace('_', ' ').title()
             
-            # Get SHAP values
-            shap_vals = shap_results[trait]['shap_values'][selected_index]
-            base_value = shap_results[trait]['base_value']
-            if isinstance(base_value, np.ndarray):
-                base_value = float(base_value[0]) if len(base_value) > 0 else float(base_value)
-            
-            col1, col2 = st.columns([1, 1])
-            
-            with col1:
-                st.subheader("Top Contributing Features")
+            # Get SHAP values (with safety check for dataset size)
+            if selected_index < len(shap_results[trait]['shap_values']):
+                shap_vals = shap_results[trait]['shap_values'][selected_index]
+                base_value = shap_results[trait]['base_value']
+                if isinstance(base_value, np.ndarray):
+                    base_value = float(base_value[0]) if len(base_value) > 0 else float(base_value)
                 
-                # Get top features
-                feature_impacts = list(zip(feature_cols, shap_vals, X_sample[0]))
-                feature_impacts.sort(key=lambda x: abs(x[1]), reverse=True)
+                col1, col2 = st.columns([1, 1])
                 
-                # Display top 10
-                for rank, (feature, shap_val, feature_val) in enumerate(feature_impacts[:10], 1):
-                    readable = feature.replace('covarep_', '').replace('_', ' ').title()
-                    direction = "↑" if shap_val > 0 else "↓"
-                    color = "green" if shap_val > 0 else "red"
+                with col1:
+                    st.subheader("Top Contributing Features")
                     
-                    st.markdown(f"{rank}. **{readable}** {direction} `{shap_val:+.3f}` (value: {feature_val:.2f})")
-            
-            with col2:
-                # Show SHAP summary plot if exists
-                img_path = f'visualizations/shap_summary_{trait}.png'
-                if os.path.exists(img_path):
-                    st.subheader("SHAP Summary Plot")
-                    st.image(img_path, use_container_width=True)
+                    # Get top features
+                    feature_impacts = list(zip(feature_cols, shap_vals, X_sample[0]))
+                    feature_impacts.sort(key=lambda x: abs(x[1]), reverse=True)
+                    
+                    # Display top 10
+                    for rank, (feature, shap_val, feature_val) in enumerate(feature_impacts[:10], 1):
+                        readable = feature.replace('covarep_', '').replace('_', ' ').title()
+                        direction = "↑" if shap_val > 0 else "↓"
+                        color = "green" if shap_val > 0 else "red"
+                        
+                        st.markdown(f"{rank}. **{readable}** {direction} `{shap_val:+.3f}` (value: {feature_val:.2f})")
+                
+                with col2:
+                    # Show SHAP summary plot if exists
+                    img_path = f'visualizations/shap_summary_{trait}.png'
+                    if os.path.exists(img_path):
+                        st.subheader("SHAP Summary Plot")
+                        st.image(img_path, use_container_width=True)
+            else:
+                st.info(f"🔍 SHAP explanations are currently only available for the first {len(shap_results[trait]['shap_values'])} candidates in this demo.")
+                st.caption("RecruitView-scale SHAP generation is recommended for full dataset analysis.")
 
     st.markdown("---")
 
