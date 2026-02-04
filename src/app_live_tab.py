@@ -29,7 +29,7 @@ def live_assessment_tab():
     1. Click the button below to start recording
     2. Speak for 30-60 seconds about a technical topic
     3. System will automatically transcribe and assess your soft skills
-    4. View your C3 scores with explanations
+    4. View your C3 scores instantly
     
     **Suggested Topics:**
     - Describe a challenging project you've worked on

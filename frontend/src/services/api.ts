@@ -11,11 +11,6 @@ export type Candidate = {
         critical_thinking: number;
         creativity: number;
     };
-    reasoning?: {
-        curiosity: string;
-        critical_thinking: string;
-        creativity: string;
-    };
 }
 
 export type AssessmentResult = {

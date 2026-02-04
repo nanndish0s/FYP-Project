@@ -43,7 +43,7 @@ export const HomePage: React.FC = () => {
                         </h1>
 
                         <p className="text-xl md:text-2xl text-purple-100 mb-10 max-w-2xl mx-auto leading-relaxed">
-                            Evaluate <strong>Curiosity, Critical Thinking & Creativity</strong> through advanced voice analysis with Explainable AI for transparent, fair hiring
+                            Evaluate <strong>Curiosity, Critical Thinking & Creativity</strong> through advanced voice analysis for objective, data-driven hiring
                         </p>
 
                         <p className="text-sm text-purple-200/80 mb-8">
@@ -85,7 +85,7 @@ export const HomePage: React.FC = () => {
                         <StatCard number="44" label="Candidates Analyzed" />
                         <StatCard number="3" label="C3 Skills Assessed" />
                         <StatCard number="539" label="Voice Features Extracted" />
-                        <StatCard number="100%" label="Explainable Results" />
+                        <StatCard number="100%" label="Transparent Results" />
                     </div>
                 </div>
             </section>
@@ -120,7 +120,7 @@ export const HomePage: React.FC = () => {
                         <FeatureCard
                             icon={<TrendingUp className="w-12 h-12" />}
                             title="C3 Assessment"
-                            description="Get transparent scores for Curiosity, Critical Thinking, and Creativity with SHAP-powered explainability."
+                            description="Get objective scores for Curiosity, Critical Thinking, and Creativity based on voice patterns."
                             step="3"
                             gradient="from-amber-500 to-orange-500"
                         />
@@ -232,7 +232,7 @@ export const HomePage: React.FC = () => {
                         {/* Process description */}
                         <div className="mt-12 text-center">
                             <p className="text-purple-100 text-sm max-w-2xl mx-auto">
-                                The entire process takes just seconds — from your spoken response to detailed C3 skill scores with SHAP-powered explanations
+                                The entire process takes just seconds — from your spoken response to detailed C3 skill scores
                             </p>
                         </div>
                     </div>
@@ -277,7 +277,7 @@ export const HomePage: React.FC = () => {
                 </div>
             </section>
 
-            {/* Why XAI Section */}
+            {/* Why This Platform Section */}
             <section className="py-20 bg-white">
                 <div className="container mx-auto px-4">
                     <div className="max-w-5xl mx-auto">
@@ -285,13 +285,13 @@ export const HomePage: React.FC = () => {
                             <div>
                                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 text-primary-700 rounded-full mb-4">
                                     <Zap className="w-4 h-4" />
-                                    <span className="text-sm font-semibold">Transparency First</span>
+                                    <span className="text-sm font-semibold">Objective Analysis</span>
                                 </div>
                                 <h2 className="text-4xl font-bold mb-6 text-gray-900">
-                                    Why Explainable AI Matters
+                                    Why Advanced AI Matters
                                 </h2>
                                 <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-                                    Traditional AI hiring tools are "black boxes" that hide biases and lack accountability. Our XAI framework uses SHAP (SHapley Additive exPlanations) to provide transparent, interpretable results.
+                                    Traditional AI hiring tools are "black boxes" that hide biases and lack accountability. Our framework focuses on objective, data-driven insights to ensure fair assessment.
                                 </p>
                                 <div className="space-y-3">
                                     <BenefitItem text="Fair and unbiased decision making" />
@@ -315,11 +315,11 @@ export const HomePage: React.FC = () => {
                                             </li>
                                             <li className="flex items-start gap-2">
                                                 <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                                                <span>First integrated voice-based XAI framework</span>
+                                                <span>First integrated voice-based AI framework</span>
                                             </li>
                                         </ul>
-                                        <Link to="/research" className="mt-6 inline-flex items-center gap-2 text-primary-600 font-semibold hover:gap-3 transition-all">
-                                            View Research Evidence
+                                        <Link to="/methodology" className="mt-6 inline-flex items-center gap-2 text-primary-600 font-semibold hover:gap-3 transition-all">
+                                            View Methodology
                                             <ArrowRight className="w-4 h-4" />
                                         </Link>
                                     </div>
@@ -340,7 +340,7 @@ export const HomePage: React.FC = () => {
                 <div className="container mx-auto px-4 text-center relative z-10">
                     <h2 className="text-4xl md:text-5xl font-bold mb-4">Ready to Get Started?</h2>
                     <p className="text-xl text-purple-100 mb-10 max-w-2xl mx-auto">
-                        Experience transparent, AI-powered soft skills assessment in action
+                        Experience objective, AI-powered soft skills assessment in action
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center gap-4">
                         <Link to="/assessment" className="group bg-white text-primary-600 hover:bg-gray-50 font-bold py-4 px-10 rounded-xl transition-all shadow-lg hover:shadow-2xl inline-flex items-center justify-center gap-2">

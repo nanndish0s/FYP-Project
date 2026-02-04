@@ -113,15 +113,6 @@ const CandidateModal: React.FC<CandidateModalProps> = ({ candidate, onClose }) =
                         <ScoreDisplay label="Critical Thinking" score={candidate.scores.critical_thinking} />
                         <ScoreDisplay label="Creativity" score={candidate.scores.creativity} />
                     </div>
-
-                    {candidate.reasoning && (
-                        <div className="space-y-4">
-                            <h3 className="font-semibold text-gray-900">Reasoning</h3>
-                            <ReasoningCard title="Curiosity" reasoning={candidate.reasoning.curiosity} />
-                            <ReasoningCard title="Critical Thinking" reasoning={candidate.reasoning.critical_thinking} />
-                            <ReasoningCard title="Creativity" reasoning={candidate.reasoning.creativity} />
-                        </div>
-                    )}
                 </div>
             </div>
         </div>
@@ -137,17 +128,5 @@ const ScoreDisplay: React.FC<ScoreDisplayProps> = ({ label, score }) => (
     <div className="card text-center">
         <div className="text-3xl font-bold text-primary-600 mb-1">{score.toFixed(1)}</div>
         <div className="text-sm text-gray-600">{label}</div>
-    </div>
-);
-
-interface ReasoningCardProps {
-    title: string;
-    reasoning: string;
-}
-
-const ReasoningCard: React.FC<ReasoningCardProps> = ({ title, reasoning }) => (
-    <div className="bg-gray-50 rounded-lg p-4">
-        <h4 className="font-medium text-gray-900 mb-2">{title}</h4>
-        <p className="text-gray-700 text-sm">{reasoning}</p>
     </div>
 );

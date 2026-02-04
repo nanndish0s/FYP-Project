@@ -138,7 +138,7 @@ export const AssessmentPage: React.FC = () => {
                                 Answer <strong className="text-primary-600">{INTERVIEW_QUESTIONS.length} questions</strong> to evaluate your soft skills
                             </p>
                             <p className="text-gray-500">
-                                Powered by Explainable AI • Fully Transparent Results
+                                Powered by Advanced AI • Fully Objective Results
                             </p>
                         </div>
 
@@ -210,8 +210,8 @@ export const AssessmentPage: React.FC = () => {
                                     <div>
                                         <h3 className="font-semibold text-gray-900 mb-1">Why This Assessment?</h3>
                                         <p className="text-sm text-gray-600 leading-relaxed">
-                                            Traditional interviews are subjective and prone to bias. Our XAI-powered platform provides
-                                            <strong> transparent, data-driven insights</strong> into your Curiosity, Critical Thinking,
+                                            Our AI-powered platform provides
+                                            <strong> objective, data-driven insights</strong> into your Curiosity, Critical Thinking,
                                             and Creativity - the soft skills that truly predict success in software engineering.
                                         </p>
                                     </div>
@@ -367,13 +367,6 @@ export const AssessmentPage: React.FC = () => {
                             <RecommendationBadge recommendation={finalResults.recommendation} average={finalResults.overallAverage} />
                         </div>
 
-                        <div className="card">
-                            <h3 className="text-xl font-semibold mb-4 text-gray-900">Hiring Justification</h3>
-                            <HiringJustification
-                                scores={finalResults.aggregateScores}
-                                average={finalResults.overallAverage}
-                            />
-                        </div>
 
                         <div className="card">
                             <h3 className="text-xl font-semibold mb-6 text-gray-900">Response Breakdown</h3>
@@ -445,105 +438,3 @@ const RecommendationBadge: React.FC<{ recommendation: string; average: number }>
     );
 };
 
-const HiringJustification: React.FC<{
-    scores: { curiosity: number; critical_thinking: number; creativity: number };
-    average: number;
-}> = ({ scores, average }) => {
-    const traits = [
-        { name: 'Curiosity', score: scores.curiosity, key: 'curiosity' },
-        { name: 'Critical Thinking', score: scores.critical_thinking, key: 'critical_thinking' },
-        { name: 'Creativity', score: scores.creativity, key: 'creativity' }
-    ];
-
-    const strengths = traits.filter(t => t.score >= 3.5);
-    const weaknesses = traits.filter(t => t.score < 3.0);
-
-    const getStrengthInsight = () => {
-        const keys = strengths.map(s => s.key);
-        if (keys.includes('curiosity') && keys.includes('critical_thinking')) return 'strong learning ability and analytical mindset';
-        if (keys.includes('creativity') && keys.includes('curiosity')) return 'innovative thinking and exploratory drive';
-        if (keys.includes('critical_thinking') && keys.includes('creativity')) return 'effective problem-solving with novel approaches';
-        return 'valuable capabilities for technical roles';
-    };
-
-    const getWeaknessImpact = () => {
-        const keys = weaknesses.map(w => w.key);
-        if (keys.includes('critical_thinking')) return 'systematic debugging, architecture design, and complex problem-solving';
-        if (keys.includes('curiosity')) return 'self-directed learning, staying current with technology, and proactive skill development';
-        if (keys.includes('creativity')) return 'innovative solution design, optimization, and out-of-the-box thinking';
-        return 'core software engineering responsibilities';
-    };
-
-    const getJustification = () => {
-        if (average >= 4.0) {
-            return {
-                decision: '✅ Strong Hire Recommendation',
-                color: 'bg-green-50 border-green-200',
-                textColor: 'text-green-900',
-                reasons: [
-                    `Exceptional overall performance (${average.toFixed(1)}/5.0) demonstrates well-rounded soft skills critical for software engineering roles.`,
-                    strengths.length > 0 && `Particularly strong in ${strengths.map(s => s.name).join(', ')}, indicating ${getStrengthInsight()}.`,
-                    'This candidate shows strong potential to contribute to team innovation, problem-solving, and continuous learning.',
-                    'Recommended for technical roles requiring independent thinking and creative problem-solving.'
-                ].filter(Boolean) as string[]
-            };
-        } else if (average >= 3.5) {
-            return {
-                decision: '👍 Recommended with Confidence',
-                color: 'bg-blue-50 border-blue-200',
-                textColor: 'text-blue-900',
-                reasons: [
-                    `Solid performance (${average.toFixed(1)}/5.0) across C3 soft skills indicates good foundational capabilities.`,
-                    strengths.length > 0 && `Shows notable strength in ${strengths.map(s => s.name).join(', ')}.`,
-                    weaknesses.length > 0 && `Areas for development in ${weaknesses.map(w => w.name).join(', ')} - these can be improved through mentorship and experience.`,
-                    'This candidate would benefit from a supportive team environment and structured growth opportunities.'
-                ].filter(Boolean) as string[]
-            };
-        } else if (average >= 3.0) {
-            return {
-                decision: '⚠️ Consider with Caution',
-                color: 'bg-amber-50 border-amber-200',
-                textColor: 'text-amber-900',
-                reasons: [
-                    `Moderate performance (${average.toFixed(1)}/5.0) suggests potential but with significant room for growth.`,
-                    strengths.length > 0 ? `Demonstrates capability in ${strengths.map(s => s.name).join(', ')}.` : 'No standout strengths identified across C3 dimensions.',
-                    weaknesses.length > 0 && `Notable gaps in ${weaknesses.map(w => w.name).join(', ')} may impact performance in roles requiring ${getWeaknessImpact()}.`,
-                    'Consider for junior positions with close mentorship, or roles that align with identified strengths.',
-                    'Additional technical interviews recommended to validate practical skills.'
-                ].filter(Boolean) as string[]
-            };
-        } else {
-            return {
-                decision: '❌ Not Recommended',
-                color: 'bg-red-50 border-red-200',
-                textColor: 'text-red-900',
-                reasons: [
-                    `Below-threshold performance (${average.toFixed(1)}/5.0) indicates significant gaps in critical soft skills for software engineering.`,
-                    `Low scores across ${weaknesses.length > 0 ? weaknesses.map(w => w.name).join(', ') : 'multiple dimensions'} suggest challenges with:`,
-                    '• Learning agility and intellectual curiosity',
-                    '• Analytical thinking and problem decomposition',
-                    '• Innovation and creative problem-solving',
-                    'These foundational skills are essential for success in modern software development roles.',
-                    'Recommendation: Not suitable for current opening. Consider alternative roles or encourage skill development before reapplying.'
-                ]
-            };
-        }
-    };
-
-    const justification = getJustification();
-
-    return (
-        <div className={`border rounded-lg p-6 ${justification.color}`}>
-            <h4 className={`text-lg font-bold mb-4 ${justification.textColor}`}>
-                {justification.decision}
-            </h4>
-            <div className="space-y-2">
-                {justification.reasons.map((reason, index) => (
-                    <p key={index} className="text-gray-700 leading-relaxed">
-                        {reason}
-                    </p>
-                ))}
-            </div>
-        </div>
-    );
-};

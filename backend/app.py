@@ -1,6 +1,6 @@
 """
-Flask Backend API for Voice-Based XAI Recruitment System
-RESTful API for C3 predictions and SHAP explanations
+Flask Backend API for Voice-Based AI Recruitment System
+RESTful API for C3 skill predictions
 """
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -118,18 +118,13 @@ def get_candidate(candidate_id):
     word_count = int(row['word_count']) if 'word_count' in row else len(str(row['transcript']).split())
     
     return jsonify({
-        'id': row['video_id'],
+        'id': int(row['video_id']),
         'transcript': row['transcript'],
         'word_count': word_count,
         'scores': {
             'curiosity': float(row.get('curiosity_score', 0)),
             'critical_thinking': float(row.get('critical_thinking_score', 0)),
             'creativity': float(row.get('creativity_score', 0))
-        },
-        'reasoning': {
-            'curiosity': row.get('curiosity_reasoning', "Assessment based on production model analysis of vocal and lexical patterns."),
-            'critical_thinking': row.get('critical_thinking_reasoning', "Assessment based on logical structure and semantic depth of the response."),
-            'creativity': row.get('creativity_reasoning', "Assessment based on vocabulary diversity and narrative originality.")
         }
     })
 

@@ -1,5 +1,5 @@
 """
-Voice-Based XAI for AI Recruitment - Streamlit Web Application
+Voice-Based AI Recruitment - Streamlit Web Application
 Interactive demo for Final Year Project presentation
 NOW WITH LIVE AUDIO ASSESSMENT!
 """
@@ -19,7 +19,7 @@ from src.app_live_tab import live_assessment_tab
 
 # Page config
 st.set_page_config(
-    page_title="Voice-Based XAI for Recruitment",
+    page_title="Voice-Based AI Recruitment",
     page_icon="🎤",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -70,7 +70,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Header
-st.markdown('<p class="main-header">🎤 Voice-Based XAI for AI Recruitment</p>', unsafe_allow_html=True)
+st.markdown('<p class="main-header">🎤 Voice-Based AI Recruitment System</p>', unsafe_allow_html=True)
 st.markdown('<p class="sub-header">Explainable Soft Skills Assessment for Software Engineering Candidates</p>', unsafe_allow_html=True)
 
 # Create tabs
@@ -111,7 +111,7 @@ with tab1:
 
     @st.cache_resource
     def load_models():
-        """Load trained models and SHAP explainers"""
+        """Load trained models"""
         models = {}
         for trait in ['curiosity', 'critical_thinking', 'creativity']:
             # Try to load RecruitView model, fall back to 44-sample, then original
@@ -124,16 +124,7 @@ with tab1:
             with open(model_file, 'rb') as f:
                 models[trait + '_score'] = pickle.load(f)
         
-        # Load SHAP explainers
-        # Check if 44-sample version exists
-        shap_file = 'results/shap_explainers_44.pkl'
-        if not os.path.exists(shap_file):
-            shap_file = 'results/shap_explainers.pkl'
-            
-        with open(shap_file, 'rb') as f:
-            shap_results = pickle.load(f)
-        
-        return models, shap_results
+        return models
 
     def create_gauge(value, title, max_value=5):
         """Create a gauge chart for score visualization"""
@@ -190,7 +181,7 @@ with tab1:
     # Load data
     with st.spinner('🔄 Loading models and data...'):
         df_full, df_labels, df_prosody = load_data()
-        models, shap_results = load_models()
+        models = load_models()
         
         # Align with RecruitView 37-feature schema
         exclude_cols = ['video_id', 'curiosity_score', 'critical_thinking_score', 'creativity_score', 'file_name']
@@ -218,7 +209,7 @@ with tab1:
     - 🧠 **Critical Thinking**: Analysis, problem-solving
     - 💡 **Creativity**: Innovation, novel solutions
     
-    Using voice and speech analysis with explainable AI (SHAP).
+    Using voice and speech analysis powered by advanced machine learning.
     """)
 
     # Get candidate data
@@ -278,81 +269,6 @@ with tab1:
         st.caption(f"Actual: {predictions['creativity_score']['actual']:.0f}/5 | Error: ±{abs(predictions['creativity_score']['predicted'] - predictions['creativity_score']['actual']):.2f}")
 
     st.markdown("---")
-
-    # Section 3: SHAP Explanations
-    st.header("🔍 Explainability: Why These Predictions?")
-
-    trait_tab1, trait_tab2, trait_tab3 = st.tabs(["📊 Curiosity", "📊 Critical Thinking", "📊 Creativity"])
-
-    for tab, trait in zip([trait_tab1, trait_tab2, trait_tab3], 
-                          ['curiosity_score', 'critical_thinking_score', 'creativity_score']):
-        with tab:
-            trait_name = trait.replace('_score', '').replace('_', ' ').title()
-            
-            # Get SHAP values (with safety check for dataset size)
-            if selected_index < len(shap_results[trait]['shap_values']):
-                shap_vals = shap_results[trait]['shap_values'][selected_index]
-                base_value = shap_results[trait]['base_value']
-                if isinstance(base_value, np.ndarray):
-                    base_value = float(base_value[0]) if len(base_value) > 0 else float(base_value)
-                
-                col1, col2 = st.columns([1, 1])
-                
-                with col1:
-                    st.subheader("Top Contributing Features")
-                    
-                    # Get top features
-                    feature_impacts = list(zip(feature_cols, shap_vals, X_sample[0]))
-                    feature_impacts.sort(key=lambda x: abs(x[1]), reverse=True)
-                    
-                    # Display top 10
-                    for rank, (feature, shap_val, feature_val) in enumerate(feature_impacts[:10], 1):
-                        readable = feature.replace('covarep_', '').replace('_', ' ').title()
-                        direction = "↑" if shap_val > 0 else "↓"
-                        color = "green" if shap_val > 0 else "red"
-                        
-                        st.markdown(f"{rank}. **{readable}** {direction} `{shap_val:+.3f}` (value: {feature_val:.2f})")
-                
-                with col2:
-                    # Show SHAP summary plot if exists
-                    img_path = f'visualizations/shap_summary_{trait}.png'
-                    if os.path.exists(img_path):
-                        st.subheader("SHAP Summary Plot")
-                        st.image(img_path, use_container_width=True)
-            else:
-                st.info(f"🔍 SHAP explanations are currently only available for the first {len(shap_results[trait]['shap_values'])} candidates in this demo.")
-                st.caption("RecruitView-scale SHAP generation is recommended for full dataset analysis.")
-
-    st.markdown("---")
-
-    # Section 4: Prosodic Analysis
-    st.header("🎤 Prosodic Analysis (Voice Characteristics)")
-
-    st.markdown("""
-    The system analyzes **9 prosodic categories** to understand voice patterns:
-    """)
-
-    # Show prosody for all traits
-    col1, col2, col3 = st.columns(3)
-
-    for col, trait_name in zip([col1, col2, col3], ['Curiosity', 'Critical Thinking', 'Creativity']):
-        with col:
-            st.subheader(trait_name)
-            trait_prosody = df_prosody[df_prosody['trait'] == trait_name].head(5)
-            
-            # Normalize impact values to 0-1 range for progress bar
-            max_impact = df_prosody[df_prosody['trait'] == trait_name]['avg_impact'].max()
-            
-            for _, row in trait_prosody.iterrows():
-                st.markdown(f"**{row['category']}**")
-                # Normalize to 0-1 range
-                normalized_value = row['avg_impact'] / max_impact if max_impact > 0 else 0
-                st.progress(min(normalized_value, 1.0))  # Ensure it's <= 1.0
-                st.caption(f"Impact: {row['avg_impact']:.4f}")
-
-    # Show prosody visualization
-    if os.path.exists('visualizations/prosody_categories.png'):
-        st.image('visualizations/prosody_categories.png', caption="Prosodic Category Contributions", use_container_width=True)
 
     st.markdown("---")
 
@@ -419,8 +335,8 @@ with tab1:
 # Footer
 st.markdown("""
 <div style='text-align: center; color: #888; padding: 2rem;'>
-    <p><strong>Voice-Based Explainable AI for Recruitment</strong></p>
+    <p><strong>Voice-Based AI Recruitment</strong></p>
     <p>Final Year Project | Software Engineering Soft Skills Assessment</p>
-    <p>Using Random Forest + SHAP for Transparent, Fair Hiring Decisions</p>
+    <p>Using Random Forest for Transparent, Fair Hiring Decisions</p>
 </div>
 """, unsafe_allow_html=True)
