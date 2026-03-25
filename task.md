@@ -17,6 +17,12 @@
     *   [ ] **Training**: Train Random Forest Regressor (Input: Aggregated Audio+Lexical -> Output: 3 Scores).
     *   [ ] **Tuning**: Grid Search for hyperparameters (Trees, Depth).
 
+# Task: Project Documentation
+- [x] Draft Chapter 5: Implementation / Experimental Setup
+    - [x] Document Technology Selection & Justification
+    - [x] Detail Data Selection (RecruitView integration)
+    - [x] Explain Core Modules (37-feature extraction, Calibration)
+    - [x] Describe React Frontend & User Experience
 - [x] Initial Exploration
     - [x] Read README.md
     - [x] Explore backend structure
@@ -51,5 +57,15 @@
     - [ ] Compare Model predictions vs Pseudo-labels
 
 - [ ] **Phase 6: Demonstration Interface**
-    - [ ] Build Streamlit/Gradio Web App
-    - [ ] Real-time voice recording and analysis demo
+    - [x] Build Streamlit/Gradio Web App
+    - [x] Real-time voice recording and analysis demo
+    - [x] **Calibration**: Adjust scores for demo responsiveness
+
+# Task: Mid-Point Submission Refinement
+- [x] Systematic Removal of XAI Features
+- [x] Score Calibration for Live Demo
+    - [x] Implement initial calibration function
+    - [x] Add heuristic Lexical Boost
+    - [x] Refine penalties for clearer "Low" tier differentiation
+- [x] Demo Script Preparation (High/Medium/Low)
+- [x] System Evaluation & Visual Graph Generation (Chapter 7)

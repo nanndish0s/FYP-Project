@@ -39,15 +39,22 @@ export const api = {
     },
 
     // Assess audio file
-    assessAudio: async (audioBlob: Blob): Promise<AssessmentResult> => {
+    assessAudio: async (audioBlob: Blob, questionId?: string): Promise<AssessmentResult> => {
         const formData = new FormData();
         formData.append('audio', audioBlob, 'recording.wav');
+        if (questionId) formData.append('question_id', questionId);
 
         const response = await axios.post(`${API_BASE_URL}/assess-audio`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
         });
+        return response.data;
+    },
+
+    // Assess text input
+    assessText: async (text: string, questionId?: string): Promise<AssessmentResult> => {
+        const response = await axios.post(`${API_BASE_URL}/assess-text`, { text, question_id: questionId });
         return response.data;
     },
 

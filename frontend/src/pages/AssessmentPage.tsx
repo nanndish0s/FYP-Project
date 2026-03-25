@@ -16,6 +16,8 @@ export const AssessmentPage: React.FC = () => {
         isComplete: false
     });
     const [currentRecording, setCurrentRecording] = useState<Blob | null>(null);
+    const [textResponse, setTextResponse] = useState<string>('');
+    const [inputMode, setInputMode] = useState<'voice' | 'text'>('voice');
     const [isProcessing, setIsProcessing] = useState(false);
     const [finalResults, setFinalResults] = useState<FinalResults | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -38,17 +40,24 @@ export const AssessmentPage: React.FC = () => {
 
     const handleReRecord = () => {
         setCurrentRecording(null);
+        setTextResponse('');
         setError(null);
     };
 
     const handleNext = async () => {
-        if (!currentRecording) return;
+        if (inputMode === 'voice' && !currentRecording) return;
+        if (inputMode === 'text' && !textResponse.trim()) return;
 
         setIsProcessing(true);
         setError(null);
 
         try {
-            const result = await api.assessAudio(currentRecording);
+            let result;
+            if (inputMode === 'voice' && currentRecording) {
+                result = await api.assessAudio(currentRecording, currentQuestion.id);
+            } else {
+                result = await api.assessText(textResponse, currentQuestion.id);
+            }
 
             const response: QuestionResponse = {
                 questionId: currentQuestion.id,
@@ -95,10 +104,11 @@ export const AssessmentPage: React.FC = () => {
                     isComplete: false
                 });
                 setCurrentRecording(null);
+                setTextResponse('');
                 setIsProcessing(false);
             }
         } catch (err) {
-            setError('Failed to process audio. Please try again.');
+            setError('Failed to process response. Please check if the backend is running.');
             console.error(err);
             setIsProcessing(false);
         }
@@ -276,14 +286,53 @@ export const AssessmentPage: React.FC = () => {
                                 </h2>
                             </div>
 
-                            <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl p-8 mb-6">
-                                <AudioRecorder
-                                    onRecordingComplete={handleRecordingComplete}
-                                    isProcessing={isProcessing}
-                                    timeLimit={currentQuestion.timeLimit}
-                                    onReRecord={handleReRecord}
-                                    hasRecording={currentRecording !== null}
-                                />
+                            <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl p-6 mb-6">
+                                <div className="flex justify-center gap-4 mb-6">
+                                    <button
+                                        onClick={() => setInputMode('voice')}
+                                        className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold transition-all shadow-sm ${inputMode === 'voice'
+                                            ? 'bg-primary-600 text-white shadow-lg'
+                                            : 'bg-white text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                    >
+                                        <Mic className="w-5 h-5" />
+                                        Voice Input
+                                    </button>
+                                    <button
+                                        onClick={() => setInputMode('text')}
+                                        className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold transition-all shadow-sm ${inputMode === 'text'
+                                            ? 'bg-violet-600 text-white shadow-lg'
+                                            : 'bg-white text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                    >
+                                        <Play className="w-5 h-5 rotate-90" />
+                                        Text Input
+                                    </button>
+                                </div>
+
+                                {inputMode === 'voice' ? (
+                                    <AudioRecorder
+                                        onRecordingComplete={handleRecordingComplete}
+                                        isProcessing={isProcessing}
+                                        timeLimit={currentQuestion.timeLimit}
+                                        onReRecord={handleReRecord}
+                                        hasRecording={currentRecording !== null}
+                                    />
+                                ) : (
+                                    <div className="space-y-4 animate-fadeIn">
+                                        <textarea
+                                            value={textResponse}
+                                            onChange={(e) => setTextResponse(e.target.value)}
+                                            placeholder="Type your response here..."
+                                            className="w-full h-40 p-5 rounded-xl border-2 border-primary-100 focus:border-primary-500 focus:ring-4 focus:ring-primary-100 transition-all outline-none text-gray-800 text-lg resize-none shadow-inner"
+                                            disabled={isProcessing}
+                                        />
+                                        <div className="flex justify-between items-center text-sm text-gray-500 bg-white/50 p-2 rounded-lg">
+                                            <span>Focus on quality and detail</span>
+                                            <span>{textResponse.split(/\s+/).filter(Boolean).length} words</span>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             {error && (
@@ -295,12 +344,14 @@ export const AssessmentPage: React.FC = () => {
                                 </div>
                             )}
 
-                            {currentRecording && !isProcessing && (
+                            {(currentRecording || (inputMode === 'text' && textResponse.trim())) && !isProcessing && (
                                 <div className="mt-8 pt-6 border-t border-gray-200">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-2 text-green-600">
                                             <CheckCircle className="w-5 h-5" />
-                                            <span className="font-medium">Response recorded</span>
+                                            <span className="font-medium">
+                                                {inputMode === 'voice' ? 'Response recorded' : 'Response ready'}
+                                            </span>
                                         </div>
                                         <button
                                             onClick={handleNext}
