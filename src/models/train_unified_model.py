@@ -24,7 +24,6 @@ def train_unified_model():
     print(f"📂 Loaded {len(mosei_df)} MOSEI samples.")
     
     # 2. Harmonize Columns
-    # RecruitView might have extra cols like 'file_name', let's stick to common features
     features = [
         'pitch_mean', 'energy_mean', 'spec_centroid_mean', 'zcr_mean',
         'mfcc_1_mean', 'mfcc_2_mean', 'mfcc_3_mean', 'mfcc_4_mean', 'mfcc_5_mean',

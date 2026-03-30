@@ -17,9 +17,9 @@ class SpeechTranscriber:
                        - base: good balance (RECOMMENDED)
                        - small: better accuracy, slower
         """
-        print(f"🤖 Loading Whisper model ({model_size})...")
+        print(f" Loading Whisper model ({model_size})...")
         self.model = whisper.load_model(model_size)
-        print(f"✅ Model loaded!")
+        print(f" Model loaded!")
         
     def transcribe(self, audio_path, language="en"):
         """

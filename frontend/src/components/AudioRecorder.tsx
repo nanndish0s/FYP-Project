@@ -163,8 +163,7 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
                 offset += chunk.length;
             }
 
-            // 3. Resample to 16kHz (backend's preferred rate)
-            // Note: browser context runs at 44.1 or 48kHz typically
+            // 3. Resample to 16kHz
             const targetRate = 16000;
             const resampledBuffer = downsampleBuffer(mergedBuffer, 44100, targetRate);
 

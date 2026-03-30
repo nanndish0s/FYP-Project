@@ -23,10 +23,10 @@ import librosa
 import parselmouth
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for React frontend
+CORS(app)  # Enable CORS for frontend
 
 # Load models and data on startup
-print("🚀 Loading models and data...")
+print(" Loading models and data...")
 
 # Load ML models
 models = {}
@@ -49,7 +49,6 @@ data_dir = project_root / 'data' / 'processed'
 recruitview_meta = data_dir / 'recruitview_metadata.csv'
 if recruitview_meta.exists():
     df_candidates = pd.read_csv(recruitview_meta)
-    # Ensure column names match what the frontend expects
     # (The frontend expects Curiosity, Critical Thinking, Creativity)
     if 'curiosity_score' in df_candidates.columns:
         df_candidates = df_candidates.rename(columns={
@@ -75,14 +74,14 @@ feature_cols = [col for col in df_ml.columns if col not in exclude_cols]
 # Calculate feature means for imputation
 feature_means = df_ml[feature_cols].mean().to_dict()
 
-print(f"✅ Loaded {len(models)} models")
-print(f"✅ Loaded {len(df_candidates)} candidates")
-print(f"✅ Feature set size: {len(feature_cols)}")
-print(f"✅ API ready!")
+print(f" Loaded {len(models)} models")
+print(f" Loaded {len(df_candidates)} candidates")
+print(f" Feature set size: {len(feature_cols)}")
+print(f" API ready!")
 
 def calibrate_score(raw_score, word_count, vocab_diversity, transcript="", question_id=None):
     """
-    Calibrates raw model scores (mean ~3.0) to a more intuitive demo scale.
+    Calibrates raw model scores (mean ~3.0)
     Adds a context-awareness layer using question-specific keywords.
     """
     # 1. Aggressive Linear Expansion for Demo
@@ -261,10 +260,10 @@ def assess_audio():
             import soundfile as sf
             # Try to read header to verify
             sf.info(str(audio_path))
-            print("✅ Valid WAV format detected, skipping conversion.")
+            print(" Valid WAV format detected, skipping conversion.")
         except Exception:
             # Conversion attempt if efficient reading fails
-            print("⚠️ Format requires conversion...")
+            print(" Format requires conversion...")
             try:
                 from pydub import AudioSegment
                 compliant_wav_path = temp_dir / f'compliant_{unique_id}.wav'
@@ -281,7 +280,7 @@ def assess_audio():
         
         
         # Transcribe
-        print(f"🎤 Starting transcription process...")
+        print(f" Starting transcription process...")
         print(f"   File path: {processing_path}")
         print(f"   File exists: {os.path.exists(processing_path)}")
         if os.path.exists(processing_path):
@@ -292,9 +291,9 @@ def assess_audio():
             transcriber = SpeechTranscriber(model_size="base")
             print("   Calling transcribe()...")
             transcript = transcriber.transcribe(processing_path)
-            print(f"✅ Transcription complete: {len(transcript)} chars")
+            print(f" Transcription complete: {len(transcript)} chars")
         except Exception as transcribe_error:
-            print(f"❌ Transcription failed: {transcribe_error}")
+            print(f" Transcription failed: {transcribe_error}")
             import traceback
             traceback.print_exc()
             raise
@@ -352,7 +351,7 @@ def assess_audio():
         features['filler_word_ratio'] = filler_count / len(words) if words else 0
         
         # Verbose Logging for Debugging
-        print("\n📊 FEATURE SUMMARY FOR PREDICTION:")
+        print("\n  FEATURE SUMMARY FOR PREDICTION:")
         print(f"   - Pitch Mean: {features.get('pitch_mean', 0):.2f} Hz (Training Mean: ~205)")
         print(f"   - Energy Mean: {features.get('energy_mean', 0):.4f} (Training Mean: ~0.04)")
         print(f"   - Vocab Diversity: {features.get('vocab_diversity', 0):.4f} (Training Mean: ~0.74)")
