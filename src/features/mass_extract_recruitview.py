@@ -158,13 +158,13 @@ def run_extraction(start_idx=0, batch_size=2011):
     output_path = 'data/processed/recruitview_features_all.csv'
     
     if not os.path.exists(metadata_path):
-        print(f"❌ Metadata not found: {metadata_path}")
+        print(f" Metadata not found: {metadata_path}")
         return
         
     df_meta = pd.read_csv(metadata_path)
     df_meta = df_meta.iloc[start_idx : start_idx + batch_size]
     
-    print(f"🚀 Starting mass extraction for {len(df_meta)} samples...")
+    print(f" Starting mass extraction for {len(df_meta)} samples...")
     print(f"   Range: {start_idx} to {start_idx + len(df_meta)}")
     
     # Check for existing progress
@@ -184,7 +184,7 @@ def run_extraction(start_idx=0, batch_size=2011):
         if all(str(row['video_id']) in existing_ids for _, row in chunk.iterrows()):
             continue
             
-        print(f"\n📦 Processing chunk {i//chunk_size + 1}/{(len(df_meta)-1)//chunk_size + 1}...")
+        print(f"\n Processing chunk {i//chunk_size + 1}/{(len(df_meta)-1)//chunk_size + 1}...")
         results = process_batch(df_meta, start=i, limit=chunk_size)
         
         if results:
@@ -200,8 +200,8 @@ def run_extraction(start_idx=0, batch_size=2011):
             # Update existing_ids for next chunk
             existing_ids.update(chunk_df['video_id'].astype(str).tolist())
 
-    print(f"\n✅ Extraction complete. Total samples: {len(all_results_df)}")
-    print(f"📂 Final dataset saved to {output_path}")
+    print(f"\n Extraction complete. Total samples: {len(all_results_df)}")
+    print(f" Final dataset saved to {output_path}")
 
 if __name__ == "__main__":
     import sys

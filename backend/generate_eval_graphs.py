@@ -28,7 +28,7 @@ def generate_graphs():
         plt.tight_layout()
         plt.savefig(os.path.join(output_dir, f'cm_{trait.lower().replace(" ", "_")}.png'))
         plt.close()
-        print(f"✅ Generated Confusion Matrix: cm_{trait.lower().replace(' ', '_')}.png")
+        print(f" Generated Confusion Matrix: cm_{trait.lower().replace(' ', '_')}.png")
 
     # --- 2. Feature Importance ---
     feat_path = os.path.join(results_dir, 'feature_importance.csv')
@@ -43,9 +43,9 @@ def generate_graphs():
             plt.tight_layout()
             plt.savefig(os.path.join(output_dir, f'feat_importance_{trait.lower().replace(" ", "_")}.png'))
             plt.close()
-            print(f"✅ Generated Feature Importance: feat_importance_{trait.lower().replace(' ', '_')}.png")
+            print(f" Generated Feature Importance: feat_importance_{trait.lower().replace(' ', '_')}.png")
 
-    print(f"\n🚀 All evaluation graphs saved to: {output_dir}")
+    print(f"\n All evaluation graphs saved to: {output_dir}")
 
 if __name__ == "__main__":
     generate_graphs()

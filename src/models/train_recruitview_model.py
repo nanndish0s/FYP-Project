@@ -13,10 +13,10 @@ def train_recruitview_models():
     feature_path = 'data/processed/recruitview_features_all.csv'
     
     if not os.path.exists(feature_path):
-        print(f"❌ Feature file not found: {feature_path}")
+        print(f" Feature file not found: {feature_path}")
         return
 
-    print(f"🚀 Loading dataset from {feature_path}...")
+    print(f" Loading dataset from {feature_path}...")
     df = pd.read_csv(feature_path)
     print(f"   Loaded {len(df)} samples with {df.shape[1]-1} features.")
 
@@ -34,7 +34,7 @@ def train_recruitview_models():
 
     for trait in target_cols:
         trait_name = trait.replace('_score', '')
-        print(f"\n🧠 Training model for: {trait_name.upper()}...")
+        print(f"\n Training model for: {trait_name.upper()}...")
         
         y = df[trait]
         
@@ -77,8 +77,8 @@ def train_recruitview_models():
     # Save performance metrics
     df_results = pd.DataFrame(results)
     df_results.to_csv('results/model_performance_recruitview.csv', index=False)
-    print(f"\n✅ All models trained and saved to 'models/'")
-    print(f"📊 Performance report saved to 'results/model_performance_recruitview.csv'")
+    print(f"\n All models trained and saved to 'models/'")
+    print(f" Performance report saved to 'results/model_performance_recruitview.csv'")
     
     return df_results
 

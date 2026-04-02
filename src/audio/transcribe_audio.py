@@ -35,7 +35,7 @@ class SpeechTranscriber:
         if not os.path.exists(audio_path):
             raise FileNotFoundError(f"Audio file not found: {audio_path}")
         
-        print(f"\n📝 Transcribing audio...")
+        print(f"\n Transcribing audio...")
         
         # Load audio with soundfile (bypasses ffmpeg requirement)
         audio_data, sample_rate = sf.read(audio_path)
@@ -66,7 +66,7 @@ class SpeechTranscriber:
         
         transcript = result["text"].strip()
         
-        print(f"✅ Transcription complete!")
+        print(f" Transcription complete!")
         print(f"   Words: {len(transcript.split())}")
         print(f"   Characters: {len(transcript)}")
         
@@ -83,7 +83,7 @@ class SpeechTranscriber:
         Returns:
             Dict with text and segments
         """
-        print(f"\n📝 Transcribing with timestamps...")
+        print(f"\n Transcribing with timestamps...")
         
         # Load audio with soundfile
         audio_data, sample_rate = sf.read(audio_path)

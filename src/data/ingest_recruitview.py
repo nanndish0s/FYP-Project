@@ -13,10 +13,10 @@ def ingest_recruitview():
     output_path = 'data/processed/recruitview_metadata.csv'
     
     if not os.path.exists(jsonl_path):
-        print(f"❌ Metadata file not found at {jsonl_path}")
+        print(f" Metadata file not found at {jsonl_path}")
         return None
 
-    print(f"🚀 Processing {jsonl_path}...")
+    print(f" Processing {jsonl_path}...")
     
     data = []
     with open(jsonl_path, 'r', encoding='utf-8') as f:
@@ -62,7 +62,7 @@ def ingest_recruitview():
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df.to_csv(output_path, index=False)
     
-    print(f"✅ Processed {len(df)} samples into {output_path}")
+    print(f" Processed {len(df)} samples into {output_path}")
     print("\nMapped C3 Score Previews (1-5 scale):")
     print(df[['curiosity_score', 'critical_thinking_score', 'creativity_score']].head())
     
