@@ -45,9 +45,9 @@ class SpeechTranscriber:
             audio_data = audio_data.mean(axis=1)
         
         # Convert to float32 and normalize to [-1, 1]
-        audio_data = audio_data.astype(np.float32)
         if audio_data.dtype == np.int16:
             audio_data = audio_data / 32768.0
+        audio_data = audio_data.astype(np.float32)
         
         # Resample to 16kHz if needed (Whisper expects 16kHz)
         if sample_rate != 16000:
@@ -92,10 +92,10 @@ class SpeechTranscriber:
         if len(audio_data.shape) > 1:
             audio_data = audio_data.mean(axis=1)
         
-        # Convert to float32
-        audio_data = audio_data.astype(np.float32)
+        # Convert to float32 and normalize to [-1, 1]
         if audio_data.dtype == np.int16:
             audio_data = audio_data / 32768.0
+        audio_data = audio_data.astype(np.float32)
         
         # Resample if needed
         if sample_rate != 16000:
