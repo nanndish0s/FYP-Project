@@ -5,6 +5,12 @@ export interface InterviewQuestion {
     timeLimit: number; // seconds
 }
 
+export interface ShapEntry {
+    feature: string;
+    impact: number;
+    direction: 'positive' | 'negative';
+}
+
 export interface QuestionResponse {
     questionId: string;
     questionText: string;
@@ -16,6 +22,11 @@ export interface QuestionResponse {
         creativity: number;
     };
     average: number;
+    explanations?: {
+        curiosity: ShapEntry[];
+        critical_thinking: ShapEntry[];
+        creativity: ShapEntry[];
+    };
 }
 
 export interface InterviewSession {

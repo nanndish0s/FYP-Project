@@ -3,4 +3,5 @@ Flask-CORS==4.0.0
 pandas
 numpy
 scikit-learn
+shap
 gunicorn

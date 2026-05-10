@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "WebSearch"
+      "WebSearch",
+      "Bash(python -c \"import shap; print\\('shap version:', shap.__version__\\)\")",
+      "Bash(timeout 20 python -c ' *)"
     ]
   }
 }

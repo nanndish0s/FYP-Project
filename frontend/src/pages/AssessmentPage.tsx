@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { AudioRecorder } from '../components/AudioRecorder';
 import { GaugeChart } from '../components/GaugeChart';
+import { ExplanationChart } from '../components/ExplanationChart';
 import { api } from '../services/api';
 import type { InterviewSession, QuestionResponse, FinalResults } from '../types/interview';
 import { INTERVIEW_QUESTIONS } from '../data/interviewQuestions';
@@ -65,7 +66,8 @@ export const AssessmentPage: React.FC = () => {
                 transcript: result.transcript,
                 wordCount: result.word_count,
                 scores: result.scores,
-                average: result.average
+                average: result.average,
+                explanations: result.explanations,
             };
 
             const newResponses = [...session.responses, response];
@@ -380,7 +382,7 @@ export const AssessmentPage: React.FC = () => {
                             Analyzing Your Responses
                         </h2>
                         <p className="text-lg text-gray-600 mb-8">
-                            Our AI is processing your voice data through 539 feature extractors
+                            Our AI is processing your response through 37 acoustic and lexical features
                         </p>
                         <div className="flex justify-center gap-2">
                             <div className="w-3 h-3 bg-primary-500 rounded-full animate-bounce"></div>
@@ -442,6 +444,13 @@ export const AssessmentPage: React.FC = () => {
                                             <ScorePill label="Creativity" score={response.scores.creativity} />
                                         </div>
                                         <p className="text-sm text-gray-600 mt-3 italic">"{response.transcript.substring(0, 150)}..."</p>
+                                        {response.explanations && (
+                                            <div className="mt-4 grid md:grid-cols-3 gap-3">
+                                                <ExplanationChart trait="curiosity" entries={response.explanations.curiosity} />
+                                                <ExplanationChart trait="critical_thinking" entries={response.explanations.critical_thinking} />
+                                                <ExplanationChart trait="creativity" entries={response.explanations.creativity} />
+                                            </div>
+                                        )}
                                     </div>
                                 ))}
                             </div>

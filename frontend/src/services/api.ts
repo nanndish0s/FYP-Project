@@ -13,6 +13,12 @@ export type Candidate = {
     };
 }
 
+export type ShapEntry = {
+    feature: string;
+    impact: number;
+    direction: 'positive' | 'negative';
+}
+
 export type AssessmentResult = {
     transcript: string;
     word_count: number;
@@ -23,6 +29,11 @@ export type AssessmentResult = {
     };
     average: number;
     recommendation: string;
+    explanations?: {
+        curiosity: ShapEntry[];
+        critical_thinking: ShapEntry[];
+        creativity: ShapEntry[];
+    };
 }
 
 export const api = {

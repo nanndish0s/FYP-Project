@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 import os
 import sys
+import shap
 from pathlib import Path
 
 # Add project root to path
@@ -24,6 +25,56 @@ import parselmouth
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend
+
+# Human-readable labels for production feature set
+FEATURE_LABELS = {
+    # Pitch
+    'pitch_mean': 'Average Pitch',
+    'pitch_std': 'Pitch Variability',
+    # Energy
+    'energy_mean': 'Average Energy',
+    'energy_std': 'Energy Variability',
+    # Spectral / ZCR
+    'spectral_centroid_mean': 'Voice Brightness',
+    'zcr_mean': 'Articulation Rate',
+    # Lexical
+    'word_count': 'Response Length',
+    'sentence_count': 'Sentence Count',
+    'avg_word_length': 'Word Complexity',
+    'vocab_diversity': 'Vocabulary Richness',
+    'filler_word_ratio': 'Hesitation Rate',
+    # MFCC means — each index maps to a specific acoustic property
+    'mfcc_0_mean': 'Voice Loudness',
+    'mfcc_1_mean': 'Voice Brightness',
+    'mfcc_2_mean': 'Low Frequency Tone',
+    'mfcc_3_mean': 'Formant Structure',
+    'mfcc_4_mean': 'Mid Frequency Resonance',
+    'mfcc_5_mean': 'Upper Mid Tone',
+    'mfcc_6_mean': 'Tonal Texture',
+    'mfcc_7_mean': 'Fine Spectral Detail',
+    'mfcc_8_mean': 'High Frequency Tone',
+    'mfcc_9_mean': 'Harmonic Texture',
+    'mfcc_10_mean': 'Upper Harmonic Content',
+    'mfcc_11_mean': 'Fine Harmonic Detail',
+    'mfcc_12_mean': 'Spectral Clarity',
+    # MFCC stds — how much each property varies over time (expressiveness)
+    'mfcc_0_std': 'Loudness Variation',
+    'mfcc_1_std': 'Brightness Variation',
+    'mfcc_2_std': 'Low Tone Variation',
+    'mfcc_3_std': 'Formant Variation',
+    'mfcc_4_std': 'Resonance Variation',
+    'mfcc_5_std': 'Tonal Expressiveness',
+    'mfcc_6_std': 'Textural Variation',
+    'mfcc_7_std': 'Spectral Variation',
+    'mfcc_8_std': 'High Tone Variation',
+    'mfcc_9_std': 'Harmonic Variation',
+    'mfcc_10_std': 'Upper Harmonic Variation',
+    'mfcc_11_std': 'Fine Harmonic Variation',
+    'mfcc_12_std': 'Spectral Detail Variation',
+}
+
+def get_readable_name(feature_name):
+    return FEATURE_LABELS.get(feature_name, feature_name.replace('_', ' ').title())
 
 # Load models and data on startup
 print(" Loading models and data...")
@@ -74,10 +125,41 @@ feature_cols = [col for col in df_ml.columns if col not in exclude_cols]
 # Calculate feature means for imputation
 feature_means = df_ml[feature_cols].mean().to_dict()
 
+# Load SHAP explainers for each C3 model
+print(" Loading SHAP explainers...")
+explainers = {}
+X_background = df_ml[feature_cols].values
+for trait_name, model in models.items():
+    explainers[trait_name] = shap.TreeExplainer(model, X_background)
+    print(f"   SHAP explainer ready: {trait_name}")
+
 print(f" Loaded {len(models)} models")
 print(f" Loaded {len(df_candidates)} candidates")
 print(f" Feature set size: {len(feature_cols)}")
 print(f" API ready!")
+
+
+def get_shap_explanation(trait_name, feature_df, top_n=5):
+    """Return top N features driving the prediction for a given trait."""
+    explainer = explainers[trait_name]
+    shap_values = explainer.shap_values(feature_df)
+
+    # Random Forest regressor returns (n_samples, n_features)
+    if isinstance(shap_values, list):
+        sv = np.array(shap_values[1])[0]
+    else:
+        sv = np.array(shap_values)[0]
+
+    results = []
+    for feat_name, val in zip(feature_df.columns, sv):
+        results.append({
+            'feature': get_readable_name(feat_name),
+            'impact': round(float(abs(val)), 4),
+            'direction': 'positive' if val >= 0 else 'negative',
+        })
+
+    results.sort(key=lambda x: x['impact'], reverse=True)
+    return results[:top_n]
 
 def calibrate_score(raw_score, word_count, vocab_diversity, transcript="", question_id=None):
     """
@@ -394,15 +476,21 @@ def assess_audio():
             recommendation = "CONSIDER"
         else:
             recommendation = "NOT_RECOMMENDED"
-        
+
+        # Generate SHAP explanations
+        explanations = {}
+        for trait_name in models.keys():
+            explanations[trait_name] = get_shap_explanation(trait_name, df_feats)
+
         return jsonify({
             'transcript': transcript,
             'word_count': len(words),
             'scores': predictions,
             'average': float(avg_score),
-            'recommendation': recommendation
+            'recommendation': recommendation,
+            'explanations': explanations
         })
-        
+
     except Exception as e:
         print(f"❌ Error in assess_audio: {e}")
         import traceback
@@ -469,15 +557,21 @@ def assess_text():
             recommendation = "CONSIDER"
         else:
             recommendation = "NOT_RECOMMENDED"
-        
+
+        # Generate SHAP explanations
+        explanations = {}
+        for trait_name in models.keys():
+            explanations[trait_name] = get_shap_explanation(trait_name, df_feats)
+
         return jsonify({
             'transcript': transcript,
             'word_count': len(words),
             'scores': predictions,
             'average': float(avg_score),
-            'recommendation': recommendation
+            'recommendation': recommendation,
+            'explanations': explanations
         })
-        
+
     except Exception as e:
         print(f"❌ Error in assess_text: {e}")
         import traceback
