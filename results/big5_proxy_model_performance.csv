@@ -1,0 +1,4 @@
+trait,big5_proxy,normaliser,r2,mae,cv_r2,samples
+curiosity,openness,QuantileTransformer (uniform 1-5),0.22145126925402048,0.8339809139832705,0.2270363188954306,2011
+critical_thinking,conscientiousness,QuantileTransformer (uniform 1-5),0.18461109374926865,0.8453454849298897,0.17057515629710512,2011
+creativity,openness + extraversion (avg),QuantileTransformer (uniform 1-5),0.27711494577683804,0.7530286673334402,0.243794912366797,2011

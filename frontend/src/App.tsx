@@ -6,7 +6,8 @@ import { CandidatesPage } from './pages/CandidatesPage';
 import { RubricPage } from './pages/RubricPage';
 import { MethodologyPage } from './pages/MethodologyPage';
 import { ResearchPage } from './pages/ResearchPage';
-import { Mic, Users, Home, BookOpen, Activity, FlaskConical } from 'lucide-react';
+import { HistoryPage } from './pages/HistoryPage';
+import { Mic, Users, Home, BookOpen, Activity, FlaskConical, History } from 'lucide-react';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
             <Route path="/rubric" element={<RubricPage />} />
             <Route path="/methodology" element={<MethodologyPage />} />
             <Route path="/research" element={<ResearchPage />} />
+            <Route path="/history" element={<HistoryPage />} />
           </Routes>
         </main>
         <Footer />
@@ -87,6 +89,12 @@ const Navigation: React.FC = () => {
               icon={<FlaskConical className="w-5 h-5" />}
               label="Research"
               active={isActive('/research')}
+            />
+            <NavLink
+              to="/history"
+              icon={<History className="w-5 h-5" />}
+              label="History"
+              active={isActive('/history')}
             />
           </div>
         </div>

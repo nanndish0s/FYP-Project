@@ -41,7 +41,7 @@ export const MethodologyPage: React.FC = () => {
                             <StepCard
                                 icon={<Activity className="w-8 h-8" />}
                                 title="2. Analysis"
-                                description="Feature Extraction (539)"
+                                description="Feature Extraction (37)"
                                 gradient="from-indigo-500 to-purple-500"
                                 delay="100"
                             />
@@ -114,8 +114,8 @@ export const MethodologyPage: React.FC = () => {
                                     <div className="flex items-start gap-3 mb-4">
                                         <Sparkles className="w-5 h-5 text-purple-600 flex-shrink-0 mt-1" />
                                         <div>
-                                            <h4 className="font-bold text-gray-900 mb-2">539 Total Features Extracted</h4>
-                                            <p className="text-sm text-gray-600">Combining acoustic (how you speak) and lexical (what you say) signals for comprehensive assessment</p>
+                                            <h4 className="font-bold text-gray-900 mb-2">37 Features Extracted per Response</h4>
+                                            <p className="text-sm text-gray-600">Combining acoustic (how you speak) and lexical (what you say) signals for comprehensive C3 assessment</p>
                                         </div>
                                     </div>
                                 </div>
@@ -126,26 +126,26 @@ export const MethodologyPage: React.FC = () => {
                                         subtitle="How You Speak"
                                         gradient="from-indigo-500 to-purple-500"
                                         features={[
-                                            'Pitch (F0) & Variation',
-                                            'Jitter & Shimmer (Voice Quality)',
-                                            'Speaking Rate & Pauses',
-                                            'Energy & Loudness',
-                                            'Mel-Frequency Cepstral Coefficients (MFCC)'
+                                            'Pitch Mean & Variability (F0)',
+                                            'Energy Mean & Variability (RMS)',
+                                            'MFCCs — 13 Coefficients (mean + std)',
+                                            'Spectral Centroid (Voice Brightness)',
+                                            'Zero-Crossing Rate (Articulation Rate)'
                                         ]}
-                                        tool="Librosa/COVAREP"
+                                        tool="librosa + parselmouth"
                                     />
                                     <FeatureBox
                                         title="Lexical Features"
                                         subtitle="What You Say"
                                         gradient="from-blue-500 to-cyan-500"
                                         features={[
-                                            'Word Count & Complexity',
-                                            'Filler Words (um, uh, like)',
-                                            'Sentiment & Tone Analysis',
-                                            'Vocabulary Richness (TTR)',
-                                            'Semantic Coherence'
+                                            'Word Count & Sentence Count',
+                                            'Average Word Length',
+                                            'Vocabulary Diversity (Type-Token Ratio)',
+                                            'Filler Word Ratio (um, uh, like)',
+                                            'Response via Whisper Transcription'
                                         ]}
-                                        tool="NLP Analysis"
+                                        tool="NLP + Whisper"
                                     />
                                 </div>
                             </div>
@@ -173,11 +173,11 @@ export const MethodologyPage: React.FC = () => {
                                     </li>
                                     <li className="flex items-start gap-3">
                                         <Zap className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
-                                        <span><strong>Training Data:</strong> 44 labeled interview samples from CMU-MOSEI dataset, annotated with C3 scores using Llama 3.3-70B</span>
+                                        <span><strong>Training Data:</strong> 2,011 interview samples from the RecruitView dataset, annotated with C3 scores using Groq API (LLaMA 3.3-70B) and validated against human-assessed Big 5 personality scores</span>
                                     </li>
                                     <li className="flex items-start gap-3">
                                         <Zap className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
-                                        <span><strong>Approach:</strong> Each C3 trait has a dedicated model trained on the full 539-feature vector</span>
+                                        <span><strong>Approach:</strong> Each C3 trait has a dedicated model trained on 37 acoustic and lexical features with 80/20 train-test split and 5-fold cross-validation</span>
                                     </li>
                                 </ul>
                             </div>

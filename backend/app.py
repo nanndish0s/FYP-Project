@@ -10,6 +10,10 @@ import numpy as np
 import os
 import sys
 import shap
+import sqlite3
+import json
+import uuid
+from datetime import datetime
 from pathlib import Path
 
 # Add project root to path
@@ -25,6 +29,46 @@ import parselmouth
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend
+
+# ==================== DATABASE ====================
+DB_PATH = project_root / 'data' / 'sessions.db'
+
+def get_db():
+    conn = sqlite3.connect(str(DB_PATH))
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def init_db():
+    conn = get_db()
+    conn.executescript('''
+        CREATE TABLE IF NOT EXISTS sessions (
+            id          TEXT PRIMARY KEY,
+            created_at  TEXT NOT NULL,
+            recommendation      TEXT,
+            overall_average     REAL,
+            curiosity_avg       REAL,
+            critical_thinking_avg REAL,
+            creativity_avg      REAL
+        );
+        CREATE TABLE IF NOT EXISTS responses (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            session_id  TEXT NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
+            question_id   TEXT,
+            question_text TEXT,
+            transcript    TEXT,
+            word_count    INTEGER,
+            curiosity_score       REAL,
+            critical_thinking_score REAL,
+            creativity_score      REAL,
+            average_score         REAL,
+            explanations          TEXT
+        );
+    ''')
+    conn.commit()
+    conn.close()
+    print(" Database initialised at", DB_PATH)
+
+init_db()
 
 # Human-readable labels for production feature set
 FEATURE_LABELS = {
@@ -116,14 +160,27 @@ if not ml_dataset_file.exists():
     ml_dataset_file = data_dir / 'ml_ready_dataset.csv'
 df_ml = pd.read_csv(ml_dataset_file)
 
-# Get feature columns (37 features for RecruitView models)
-exclude_cols = ['video_id', 'transcript', 'curiosity_score', 'critical_thinking_score', 
-                'creativity_score', 'curiosity_reasoning', 'critical_thinking_reasoning', 
-                'creativity_reasoning', 'file_name']
+# Get feature columns — excludes quantity measures (word_count, sentence_count)
+# which are retained only for the validity pre-check, not as model inputs
+exclude_cols = [
+    'video_id', 'transcript', 'curiosity_score', 'critical_thinking_score',
+    'creativity_score', 'curiosity_reasoning', 'critical_thinking_reasoning',
+    'creativity_reasoning', 'file_name',
+    'word_count', 'sentence_count',
+]
 feature_cols = [col for col in df_ml.columns if col not in exclude_cols]
 
 # Calculate feature means for imputation
 feature_means = df_ml[feature_cols].mean().to_dict()
+
+# Load data-driven calibration models (Isotonic Regression, trained via OOF CV)
+print(" Loading calibration models...")
+calibrators = {}
+for trait in ['curiosity', 'critical_thinking', 'creativity']:
+    cal_file = models_dir / f'{trait}_calibration.pkl'
+    with open(cal_file, 'rb') as f:
+        calibrators[trait] = pickle.load(f)
+    print(f"   Calibrator ready: {trait}")
 
 # Load SHAP explainers for each C3 model
 print(" Loading SHAP explainers...")
@@ -133,10 +190,27 @@ for trait_name, model in models.items():
     explainers[trait_name] = shap.TreeExplainer(model, X_background)
     print(f"   SHAP explainer ready: {trait_name}")
 
+# Load training feature statistics for distribution-aware clipping
+print(" Loading feature statistics...")
+with open(models_dir / 'feature_stats.pkl', 'rb') as f:
+    feature_stats = pickle.load(f)
+clip_low  = np.array([feature_stats['clip_low'][c]  for c in feature_cols])
+clip_high = np.array([feature_stats['clip_high'][c] for c in feature_cols])
+print(f"   Feature clip bounds loaded for {len(feature_cols)} features")
+
 print(f" Loaded {len(models)} models")
 print(f" Loaded {len(df_candidates)} candidates")
 print(f" Feature set size: {len(feature_cols)}")
 print(f" API ready!")
+
+
+def clip_to_training_distribution(df_feats):
+    """Clip live recording features to 3-sigma bounds of training distribution.
+    Prevents out-of-distribution predictions caused by the domain gap between
+    studio training audio and live browser microphone recordings."""
+    arr = df_feats.values.copy().astype(float)
+    arr = np.clip(arr, clip_low, clip_high)
+    return pd.DataFrame(arr, columns=df_feats.columns)
 
 
 def get_shap_explanation(trait_name, feature_df, top_n=5):
@@ -161,74 +235,124 @@ def get_shap_explanation(trait_name, feature_df, top_n=5):
     results.sort(key=lambda x: x['impact'], reverse=True)
     return results[:top_n]
 
-def calibrate_score(raw_score, word_count, vocab_diversity, transcript="", question_id=None):
-    """
-    Calibrates raw model scores (mean ~3.0)
-    Adds a context-awareness layer using question-specific keywords.
-    """
-    # 1. Aggressive Linear Expansion for Demo
-    if raw_score <= 2.5:
-        calibrated = 1.0 + (raw_score - 1.0) * 1.13
-    elif raw_score <= 3.2:
-        calibrated = 2.7 + (raw_score - 2.5) * 1.57
-    else:
-        calibrated = 3.8 + (raw_score - 3.2) * 1.5
-    
-    # 2. Enhanced Lexical Boost/Penalty (Optimized for High/Medium/Low scripts)
-    if word_count > 75 and vocab_diversity > 0.7:
-        calibrated += 0.8 # High Response Boost
-    elif word_count > 55:
-        calibrated += 0.4 # Solid Response Boost
-    elif word_count < 25:
-        # Aggressive penalty for extreme brevity
-        calibrated -= 2.2 
-    elif word_count < 45:
-        # Moderate penalty to keep medium responses in the 3.0-3.3 range
-        calibrated -= 0.9
+# ── Research-grounded keyword lists ──────────────────────────────────────────
+# Keywords derived from peer-reviewed literature (2020–2025):
+# Curiosity:         Boyd & Schwartz (2021), Ceraolo et al. (2025),
+#                    Sadler-Smith & Akstinaite (2022)
+# Critical Thinking: Yang et al. (2023), Lohmann et al. (2024),
+#                    Kharchenko et al. (2025)
+# Creativity:        Ahmed & Feist (2021), López Martínez et al. (2024)
+RESEARCH_KEYWORDS = {
+    # Boyd & Schwartz (2021) — LIWC-22 Curiosity category
+    # Ceraolo et al. (2025) — causal inquiry markers
+    # Sadler-Smith & Akstinaite (2022) — insight language
+    # Kashdan et al. (2020) — Five-Dimensional Curiosity Scale
+    # Silvia & Christensen (2020) — curiosity-openness link
+    'curiosity': [
+        # Causal inquiry (Ceraolo et al., 2025)
+        'why', 'how does', 'what if', 'what causes', 'how come',
+        # LIWC Curiosity category (Boyd & Schwartz, 2021)
+        'curious', 'wonder', 'discover', 'explore', 'fascinate',
+        'interest', 'find out', 'investigate', 'question',
+        # Insight language (Sadler-Smith & Akstinaite, 2022)
+        'realize', 'notice', 'understand', 'effect',
+        # Curiosity-openness markers (Kashdan et al., 2020)
+        'independent', 'motivated', 'learned', 'passion',
+        'outside', 'self-directed', 'sought', 'keen',
+        # Exploratory behaviour (Silvia & Christensen, 2020)
+        'stretch', 'new knowledge', 'dig deeper', 'find out why',
+        'wanted to know', 'read about', 'looked into',
+    ],
+    # Yang et al. (2023) — argument mining markers
+    # Lohmann et al. (2024) — discourse markers in argumentation
+    # Kharchenko et al. (2025) — hedging as epistemic nuance
+    # Koutsoumpis et al. (2022) — conscientiousness language
+    'critical_thinking': [
+        # Claim markers (Yang et al., 2023)
+        'i think', 'i believe', 'in my opinion', 'i argue', 'i concluded',
+        # Causal/reasoning (Yang et al., 2023; Lohmann et al., 2024)
+        'because', 'therefore', 'thus', 'hence', 'since',
+        'as a result', 'this means', 'which led to',
+        # Counterargument markers (Yang et al., 2023)
+        'however', 'although', 'nevertheless', 'despite',
+        'on the other hand', 'in contrast', 'yet',
+        # Evidence markers (Yang et al., 2023)
+        'for example', 'for instance', 'according to',
+        'this shows', 'this suggests', 'evidence',
+        # Hedging — epistemic nuance (Kharchenko et al., 2025)
+        'might', 'perhaps', 'possibly', 'it seems', 'likely',
+        # Systematic reasoning
+        'systematic', 'identify', 'root cause', 'isolate',
+        'analyse', 'analyze', 'evaluate', 'trace', 'diagnose',
+        'methodical', 'logical', 'structured', 'step by step',
+        # Conscientiousness language (Koutsoumpis et al., 2022)
+        'confirm', 'verify', 'validate', 'ensure', 'carefully',
+    ],
+    # Ahmed & Feist (2021) — Creativity & Innovation Dictionary
+    # López Martínez et al. (2024) — verbal creative thinking indicators
+    # Olson et al. (2021) — semantic distance and divergent thinking
+    # Flynn & Allen (2025) — lexical diversity and creative fluency
+    'creativity': [
+        # Creativity & Innovation Dictionary (Ahmed & Feist, 2021)
+        'create', 'innovate', 'invent', 'novel', 'unique',
+        'imagine', 'transform', 'vision', 'creative',
+        # Verbal creative thinking (López Martínez et al., 2024)
+        'unconventional', 'alternative', 'original', 'unusual',
+        'rather than', 'instead', 'new approach', 'different way',
+        'outside the box', 'reframe', 'rethink',
+        # Creative process language
+        'experimented', 'tested', 'prototype', 'iteration',
+        'brainstorm', 'design', 'built', 'developed',
+        # Tentative/exploratory language (Ahmed & Feist, 2021)
+        'maybe', 'what if', 'could we', 'what about',
+        # Divergent thinking markers (Olson et al., 2021)
+        'combined', 'connected', 'merged', 'adapted', 'repurposed',
+        'unexpected', 'surprising', 'creative solution',
+    ],
+}
 
-    # 3. Context-Aware Keyword Scoring
-    context_keywords = {
-        'q1_curiosity': ['explored', 'motivated', 'learned', 'interest', 'passion', 'independent', 'technology', 'fascinated', 'outside', 'wondered'],
-        'q2_critical_thinking': ['systematic', 'identify', 'root cause', 'logic', 'trace', 'logs', 'failure', 'isolate', 'debug', 'approach', 'analyzed'],
-        'q3_creativity': ['unconventional', 'creative', 'alternative', 'novel', 'unique', 'innovation', 'outside the box', 'invented', 'different', 'experimented']
-    }
-    
-    relevance_boost = 0
-    matches = 0
-    if question_id in context_keywords:
-        target_words = context_keywords[question_id]
-        matches = sum(1 for word in target_words if word in transcript.lower())
-        
-        if matches >= 3:
-            relevance_boost = 0.5 
-        elif matches >= 1:
-            relevance_boost = 0.2 
-            
-    # 4. Global Demo Keyword Boost
-    high_keywords = ['webassembly', 'graphql', 'systematic', 'divide-and-conquer', 'unconventional', 'hybrid', 'benchmarked']
-    if any(kw in transcript.lower() for kw in high_keywords):
-        relevance_boost += 0.4
-    
-    calibrated += relevance_boost
-    
-    # 5. Nonsense / Relevance / Repetition Filter
-    is_repetitive = (word_count > 15 and vocab_diversity < 0.5)
-    is_irrelevant = (word_count > 30 and matches == 0 and question_id is not None)
-    
-    nonsense_markers = ['lorem ipsum', 'dolor sit', 'consectetur adipiscing', 'integer feugiat']
-    is_placeholder = any(marker in transcript.lower() for marker in nonsense_markers)
-    
-    if is_placeholder or is_irrelevant or is_repetitive or word_count < 20:
-        # Slam the score for off-topic, nonsense, or extremely short content
-        # Hard cap at 2.4 to ensure "NOT_RECOMMENDED"
-        calibrated = min(calibrated, 2.4)
-        
-    # Final clamping
-    final_score = min(max(calibrated, 1.0), 5.0)
-    
-    # Audit log for debugging
-    print(f"   [CALIBRATION] Raw: {raw_score:.2f} -> Final: {final_score:.2f} (Words: {word_count}, Diversity: {vocab_diversity:.2f}, Relevance: +{relevance_boost})")
-    
+KEYWORD_BOOST_PER_MATCH = 0.20   # per matched keyword
+KEYWORD_BOOST_MAX       = 1.20   # cap — equivalent to 6 keyword matches; differentiates good (4) from very good (6+) responses
+
+
+def apply_keyword_boost(calibrated: float, transcript: str, trait_name: str) -> float:
+    """Apply a small research-grounded boost for trait-relevant vocabulary."""
+    if not transcript or trait_name not in RESEARCH_KEYWORDS:
+        return calibrated
+    text = transcript.lower()
+    keywords = RESEARCH_KEYWORDS[trait_name]
+    matches = sum(1 for kw in keywords if kw in text)
+    boost = min(matches * KEYWORD_BOOST_PER_MATCH, KEYWORD_BOOST_MAX)
+    boosted = float(np.clip(calibrated + boost, 1.0, 5.0))
+    print(f"   [KEYWORD] {trait_name}: {matches} matches → +{boost:.2f} "
+          f"({calibrated:.3f} → {boosted:.3f})")
+    return boosted
+
+
+def calibrate_score(raw_score, word_count, vocab_diversity, transcript="", question_id=None, trait_name=None):
+    """
+    Data-driven calibration using Isotonic Regression trained on
+    out-of-fold predictions from the RecruitView dataset (2,011 samples),
+    followed by a research-grounded keyword boost derived from peer-reviewed
+    literature on verbal markers of curiosity, critical thinking, and creativity.
+    """
+    # Hard validity cap — responses under 20 words have insufficient signal
+    if word_count < 20:
+        print(f"   [CALIBRATION] Too short ({word_count} words) — capped at 2.4")
+        return 2.4
+
+    # Apply learned isotonic calibration
+    if trait_name and trait_name in calibrators:
+        calibrated = float(calibrators[trait_name].predict([raw_score])[0])
+    else:
+        calibrated = float(np.clip(raw_score, 1.0, 5.0))
+
+    # Apply research-grounded keyword boost
+    calibrated = apply_keyword_boost(calibrated, transcript, trait_name)
+
+    final_score = float(np.clip(calibrated, 1.0, 5.0))
+    print(f"   [CALIBRATION] Raw: {raw_score:.3f} -> Final: {final_score:.3f} "
+          f"(trait: {trait_name}, words: {word_count})")
     return final_score
 
 # ==================== ROUTES ====================
@@ -302,9 +426,11 @@ def predict():
         
         # Calculate recommendation
         avg_score = np.mean(list(predictions.values()))
+        # Thresholds aligned to QuantileTransformer uniform 1-5 scale:
+        # 4.0 = top 25%, 3.45 = top ~38%, 3.0 = median
         if avg_score >= 4.0:
             recommendation = "STRONG_HIRE"
-        elif avg_score >= 3.5:
+        elif avg_score >= 3.45:
             recommendation = "RECOMMENDED"
         elif avg_score >= 3.0:
             recommendation = "CONSIDER"
@@ -449,7 +575,10 @@ def assess_audio():
         
         # Ensure exact column order and selection expected by the models
         df_feats = df_feats[feature_cols]
-        
+
+        # Clip features to training distribution (3-sigma bounds)
+        df_feats = clip_to_training_distribution(df_feats)
+
         # Predict and Calibrate
         predictions = {}
         for trait_name, model in models.items():
@@ -458,19 +587,22 @@ def assess_audio():
             
             # Apply Calibration
             calibrated_score = calibrate_score(
-                raw_score, 
-                features['word_count'], 
+                raw_score,
+                features['word_count'],
                 features['vocab_diversity'],
                 transcript=transcript,
-                question_id=request.form.get('question_id')
+                question_id=request.form.get('question_id'),
+                trait_name=trait_name
             )
             predictions[trait_name] = float(calibrated_score)
         
         # Calculate recommendation
         avg_score = np.mean(list(predictions.values()))
+        # Thresholds aligned to QuantileTransformer uniform 1-5 scale:
+        # 4.0 = top 25%, 3.45 = top ~38%, 3.0 = median
         if avg_score >= 4.0:
             recommendation = "STRONG_HIRE"
-        elif avg_score >= 3.5:
+        elif avg_score >= 3.45:
             recommendation = "RECOMMENDED"
         elif avg_score >= 3.0:
             recommendation = "CONSIDER"
@@ -522,7 +654,9 @@ def assess_text():
         filler_count = sum(1 for w in words if w in filler_words)
         features['filler_word_ratio'] = filler_count / len(words) if words else 0
         
-        # Use neutral acoustic features for text-only assessment to avoid penalization
+        # Text mode has no audio — acoustic features are imputed with training means
+        # so the model receives a valid feature vector. Lexical features are computed
+        # from the actual text response.
         for col in feature_cols:
             if col not in features:
                 features[col] = feature_means.get(col, 0)
@@ -539,19 +673,22 @@ def assess_text():
             
             # Apply Calibration
             calibrated_score = calibrate_score(
-                raw_score, 
-                features['word_count'], 
+                raw_score,
+                features['word_count'],
                 features['vocab_diversity'],
                 transcript=transcript,
-                question_id=question_id
+                question_id=question_id,
+                trait_name=trait_name
             )
             predictions[trait_name] = float(calibrated_score)
         
         # Calculate recommendation
         avg_score = np.mean(list(predictions.values()))
+        # Thresholds aligned to QuantileTransformer uniform 1-5 scale:
+        # 4.0 = top 25%, 3.45 = top ~38%, 3.0 = median
         if avg_score >= 4.0:
             recommendation = "STRONG_HIRE"
-        elif avg_score >= 3.5:
+        elif avg_score >= 3.45:
             recommendation = "RECOMMENDED"
         elif avg_score >= 3.0:
             recommendation = "CONSIDER"
@@ -577,6 +714,112 @@ def assess_text():
         import traceback
         traceback.print_exc()
         return jsonify({'error': str(e)}), 500
+
+# ==================== SESSION ROUTES ====================
+
+@app.route('/api/sessions', methods=['GET'])
+def list_sessions():
+    """Return all saved interview sessions, newest first."""
+    conn = get_db()
+    rows = conn.execute(
+        'SELECT * FROM sessions ORDER BY created_at DESC'
+    ).fetchall()
+    conn.close()
+    return jsonify([dict(r) for r in rows])
+
+
+@app.route('/api/sessions', methods=['POST'])
+def save_session():
+    """Save a completed interview session with all question responses."""
+    data = request.json
+    session_id = str(uuid.uuid4())
+    created_at = datetime.utcnow().isoformat()
+
+    agg = data.get('aggregateScores', {})
+    conn = get_db()
+    conn.execute(
+        '''INSERT INTO sessions
+           (id, created_at, recommendation, overall_average,
+            curiosity_avg, critical_thinking_avg, creativity_avg)
+           VALUES (?,?,?,?,?,?,?)''',
+        (
+            session_id,
+            created_at,
+            data.get('recommendation'),
+            data.get('overallAverage'),
+            agg.get('curiosity'),
+            agg.get('critical_thinking'),
+            agg.get('creativity'),
+        )
+    )
+
+    for r in data.get('responses', []):
+        scores = r.get('scores', {})
+        conn.execute(
+            '''INSERT INTO responses
+               (session_id, question_id, question_text, transcript,
+                word_count, curiosity_score, critical_thinking_score,
+                creativity_score, average_score, explanations)
+               VALUES (?,?,?,?,?,?,?,?,?,?)''',
+            (
+                session_id,
+                r.get('questionId'),
+                r.get('questionText'),
+                r.get('transcript'),
+                r.get('wordCount'),
+                scores.get('curiosity'),
+                scores.get('critical_thinking'),
+                scores.get('creativity'),
+                r.get('average'),
+                json.dumps(r.get('explanations', {})),
+            )
+        )
+
+    conn.commit()
+    conn.close()
+    return jsonify({'id': session_id, 'created_at': created_at}), 201
+
+
+@app.route('/api/sessions/<session_id>', methods=['GET'])
+def get_session(session_id):
+    """Return a single session with all its question responses."""
+    conn = get_db()
+    session = conn.execute(
+        'SELECT * FROM sessions WHERE id = ?', (session_id,)
+    ).fetchone()
+    if not session:
+        conn.close()
+        return jsonify({'error': 'Session not found'}), 404
+
+    responses = conn.execute(
+        'SELECT * FROM responses WHERE session_id = ? ORDER BY id', (session_id,)
+    ).fetchall()
+    conn.close()
+
+    result = dict(session)
+    result['responses'] = []
+    for r in responses:
+        row = dict(r)
+        row['explanations'] = json.loads(row['explanations'] or '{}')
+        result['responses'].append(row)
+
+    return jsonify(result)
+
+
+@app.route('/api/sessions/<session_id>', methods=['DELETE'])
+def delete_session(session_id):
+    """Delete a session and all its responses (CASCADE handles responses)."""
+    conn = get_db()
+    conn.execute('PRAGMA foreign_keys = ON')
+    result = conn.execute(
+        'DELETE FROM sessions WHERE id = ?', (session_id,)
+    )
+    conn.commit()
+    conn.close()
+    if result.rowcount == 0:
+        return jsonify({'error': 'Session not found'}), 404
+    return jsonify({'deleted': session_id})
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000, use_reloader=False)

@@ -83,9 +83,10 @@ export const AssessmentPage: React.FC = () => {
 
                 const overallAverage = (aggregateScores.curiosity + aggregateScores.critical_thinking + aggregateScores.creativity) / 3;
 
+                // Thresholds aligned to QuantileTransformer uniform 1-5 scale
                 let recommendation = 'NOT_RECOMMENDED';
                 if (overallAverage >= 4.0) recommendation = 'STRONG_HIRE';
-                else if (overallAverage >= 3.5) recommendation = 'RECOMMENDED';
+                else if (overallAverage >= 3.45) recommendation = 'RECOMMENDED';
                 else if (overallAverage >= 3.0) recommendation = 'CONSIDER';
 
                 setFinalResults({
@@ -94,6 +95,14 @@ export const AssessmentPage: React.FC = () => {
                     overallAverage,
                     recommendation
                 });
+
+                // Auto-save session to database (non-blocking)
+                api.saveSesssion({
+                    responses: newResponses,
+                    aggregateScores,
+                    overallAverage,
+                    recommendation,
+                }).catch(() => {/* save failure doesn't break results display */});
 
                 setTimeout(() => {
                     setStep('results');
@@ -443,7 +452,7 @@ export const AssessmentPage: React.FC = () => {
                                             <ScorePill label="Critical Thinking" score={response.scores.critical_thinking} />
                                             <ScorePill label="Creativity" score={response.scores.creativity} />
                                         </div>
-                                        <p className="text-sm text-gray-600 mt-3 italic">"{response.transcript.substring(0, 150)}..."</p>
+                                        <ExpandableTranscript transcript={response.transcript} />
                                         {response.explanations && (
                                             <div className="mt-4 grid md:grid-cols-3 gap-3">
                                                 <ExplanationChart trait="curiosity" entries={response.explanations.curiosity} />
@@ -474,6 +483,28 @@ const ScorePill: React.FC<{ label: string; score: number }> = ({ label, score })
         <div className="text-xs text-gray-500">{label}</div>
     </div>
 );
+
+const ExpandableTranscript: React.FC<{ transcript: string }> = ({ transcript }) => {
+    const [expanded, setExpanded] = useState(false);
+    const PREVIEW_LEN = 150;
+    const isLong = transcript.length > PREVIEW_LEN;
+
+    return (
+        <div className="mt-3">
+            <p className="text-sm text-gray-600 italic">
+                "{expanded || !isLong ? transcript : transcript.substring(0, PREVIEW_LEN) + '...'}"
+            </p>
+            {isLong && (
+                <button
+                    onClick={() => setExpanded(v => !v)}
+                    className="mt-1 text-xs font-semibold text-primary-600 hover:text-primary-800 transition-colors"
+                >
+                    {expanded ? 'Show less' : 'Show full transcript'}
+                </button>
+            )}
+        </div>
+    );
+};
 
 const RecommendationBadge: React.FC<{ recommendation: string; average: number }> = ({ recommendation, average }) => {
     const config = {

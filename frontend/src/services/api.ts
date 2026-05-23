@@ -74,4 +74,49 @@ export const api = {
         const response = await axios.get(`${API_BASE_URL}/health`);
         return response.data;
     },
+
+    // Session storage
+    saveSesssion: async (payload: object): Promise<{ id: string; created_at: string }> => {
+        const response = await axios.post(`${API_BASE_URL}/sessions`, payload);
+        return response.data;
+    },
+
+    listSessions: async (): Promise<SessionSummary[]> => {
+        const response = await axios.get(`${API_BASE_URL}/sessions`);
+        return response.data;
+    },
+
+    getSession: async (id: string): Promise<SessionDetail> => {
+        const response = await axios.get(`${API_BASE_URL}/sessions/${id}`);
+        return response.data;
+    },
+
+    deleteSession: async (id: string): Promise<void> => {
+        await axios.delete(`${API_BASE_URL}/sessions/${id}`);
+    },
+};
+
+export type SessionSummary = {
+    id: string;
+    created_at: string;
+    recommendation: string;
+    overall_average: number;
+    curiosity_avg: number;
+    critical_thinking_avg: number;
+    creativity_avg: number;
+};
+
+export type SessionDetail = SessionSummary & {
+    responses: {
+        id: number;
+        question_id: string;
+        question_text: string;
+        transcript: string;
+        word_count: number;
+        curiosity_score: number;
+        critical_thinking_score: number;
+        creativity_score: number;
+        average_score: number;
+        explanations: Record<string, ShapEntry[]>;
+    }[];
 };
