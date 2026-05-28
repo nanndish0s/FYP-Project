@@ -1,0 +1,199 @@
+<mxfile host="65bd71144e">
+    <diagram id="i-OWQcRVwte2VN5BQZzY" name="Page-1">
+        <mxGraphModel dx="1484" dy="1113" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="L1" value="Frontend Layer — React + TypeScript (Vite, port 3000)" style="swimlane;fontStyle=1;fontSize=13;startSize=35;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#003366;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="20" width="1240" height="170" as="geometry"/>
+                </mxCell>
+                <mxCell id="F1" value="Assessment Page&#xa;(Interview Wizard)" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" parent="L1" vertex="1">
+                    <mxGeometry x="30" y="50" width="155" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="F2" value="Audio Recorder&#xa;Component" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" parent="L1" vertex="1">
+                    <mxGeometry x="30" y="112" width="155" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="F3" value="History Page&#xa;(Session Viewer)" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" parent="L1" vertex="1">
+                    <mxGeometry x="215" y="50" width="155" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="F4" value="Candidates Page&#xa;(RecruitView Demo)" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" parent="L1" vertex="1">
+                    <mxGeometry x="400" y="50" width="155" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="F5" value="Methodology / Research&#xa;/ Rubric Pages" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" parent="L1" vertex="1">
+                    <mxGeometry x="585" y="50" width="155" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="F6" value="Gauge Chart&#xa;(Scores 1–5)" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" parent="L1" vertex="1">
+                    <mxGeometry x="770" y="50" width="140" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="F7" value="SHAP Explanation&#xa;Charts (per trait)" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" parent="L1" vertex="1">
+                    <mxGeometry x="930" y="50" width="145" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="F8" value="API Service (api.ts)&#xa;HTTP REST Client" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;" parent="L1" vertex="1">
+                    <mxGeometry x="1095" y="65" width="120" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="A1" value="HTTP REST (CORS)" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#6c8ebf;fontColor=#003366;fontSize=11;fontStyle=1;" parent="1" source="F8" target="B1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="L2" value="Backend Layer — Flask REST API (Python, port 5000)" style="swimlane;fontStyle=1;fontSize=13;startSize=35;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#1a3a1a;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="240" width="1240" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="B1" value="POST /api/assess-audio&#xa;Voice Assessment" style="rounded=1;fillColor=#f8fff8;strokeColor=#82b366;fontSize=11;" parent="L2" vertex="1">
+                    <mxGeometry x="30" y="40" width="195" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="B2" value="POST /api/assess-text&#xa;Text Assessment" style="rounded=1;fillColor=#f8fff8;strokeColor=#82b366;fontSize=11;" parent="L2" vertex="1">
+                    <mxGeometry x="245" y="40" width="195" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="B3" value="GET /api/candidates&#xa;RecruitView Data" style="rounded=1;fillColor=#f8fff8;strokeColor=#82b366;fontSize=11;" parent="L2" vertex="1">
+                    <mxGeometry x="460" y="40" width="195" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="B4" value="GET|POST|DELETE&#xa;/api/sessions" style="rounded=1;fillColor=#f8fff8;strokeColor=#82b366;fontSize=11;" parent="L2" vertex="1">
+                    <mxGeometry x="675" y="40" width="195" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="B5" value="GET /api/health" style="rounded=1;fillColor=#f8fff8;strokeColor=#82b366;fontSize=11;" parent="L2" vertex="1">
+                    <mxGeometry x="890" y="40" width="150" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="A2" value="" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#d79b00;" parent="1" source="B1" target="M1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="A3" value="" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#d79b00;" parent="1" source="B2" target="M3" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="L3" value="ML Processing Pipeline" style="swimlane;fontStyle=1;fontSize=13;startSize=35;fillColor=#ffe6cc;strokeColor=#d79b00;fontColor=#7d4500;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="420" width="1240" height="310" as="geometry"/>
+                </mxCell>
+                <mxCell id="M1" value="Whisper STT&#xa;(OpenAI base model)&#xa;Audio → Transcript" style="rounded=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=11;" parent="L3" vertex="1">
+                    <mxGeometry x="30" y="55" width="150" height="65" as="geometry"/>
+                </mxCell>
+                <mxCell id="M2" value="Feature Extraction&#xa;Acoustic (35 features):&#xa;Pitch, Energy, 13×2 MFCCs&#xa;ZCR, Spectral Centroid&#xa;Lexical: Vocab, Filler, Complexity" style="rounded=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=11;" parent="L3" vertex="1">
+                    <mxGeometry x="210" y="45" width="170" height="85" as="geometry"/>
+                </mxCell>
+                <mxCell id="M3" value="Text Mode:&#xa;Impute acoustic features&#xa;with training means" style="rounded=1;fillColor=#fff9e6;strokeColor=#d79b00;fontSize=10;fontStyle=2;" parent="L3" vertex="1">
+                    <mxGeometry x="210" y="155" width="170" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="M4" value="3-Sigma Feature Clipping&#xa;Clips to training distribution&#xa;bounds — domain gap fix&#xa;(feature_stats.pkl)" style="rounded=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=11;" parent="L3" vertex="1">
+                    <mxGeometry x="415" y="55" width="165" height="75" as="geometry"/>
+                </mxCell>
+                <mxCell id="M5" value="Validity Check&#xa;&lt; 50 words → floor 2.4&#xa;(Boyd &amp; Schwartz, 2021)" style="rounded=1;fillColor=#fff9e6;strokeColor=#b85450;fontSize=11;" parent="L3" vertex="1">
+                    <mxGeometry x="415" y="160" width="165" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="M6" value="Random Forest × 3&#xa;curiosity | critical_thinking&#xa;creativity&#xa;Trained: 2,011 RecruitView&#xa;Target: Big 5 proxies" style="rounded=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=11;" parent="L3" vertex="1">
+                    <mxGeometry x="615" y="45" width="165" height="85" as="geometry"/>
+                </mxCell>
+                <mxCell id="M7" value="Isotonic Regression&#xa;Calibration × 3&#xa;5-fold OOF — no leakage&#xa;Maps raw RF → 1–5 scale" style="rounded=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=11;" parent="L3" vertex="1">
+                    <mxGeometry x="815" y="55" width="165" height="75" as="geometry"/>
+                </mxCell>
+                <mxCell id="M8" value="Keyword Boost Layer&#xa;+0.20 / match, cap +1.20&#xa;Research-grounded keywords&#xa;Boyd &amp; Schwartz (2021)&#xa;Yang et al. (2023) etc." style="rounded=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=11;" parent="L3" vertex="1">
+                    <mxGeometry x="815" y="160" width="165" height="85" as="geometry"/>
+                </mxCell>
+                <mxCell id="M9" value="SHAP TreeExplainer × 3&#xa;Top 5 features per trait&#xa;XAI — direction + magnitude&#xa;Natural language summary" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" parent="L3" vertex="1">
+                    <mxGeometry x="1030" y="55" width="165" height="75" as="geometry"/>
+                </mxCell>
+                <mxCell id="M10" value="Recommendation Engine&#xa;≥ 4.0 → STRONG_HIRE&#xa;≥ 3.45 → RECOMMENDED&#xa;≥ 3.0 → CONSIDER&#xa;&lt; 3.0 → NOT_RECOMMENDED" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="L3" vertex="1">
+                    <mxGeometry x="1030" y="165" width="165" height="85" as="geometry"/>
+                </mxCell>
+                <mxCell id="MA1" value="" style="edgeStyle=orthogonalEdgeStyle;" parent="L3" source="M1" target="M2" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="MA2" value="" style="edgeStyle=orthogonalEdgeStyle;" parent="L3" source="M2" target="M4" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="MA3" value="" style="edgeStyle=orthogonalEdgeStyle;" parent="L3" source="M4" target="M6" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="MA4" value="" style="edgeStyle=orthogonalEdgeStyle;" parent="L3" source="M6" target="M7" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="MA5" value="" style="edgeStyle=orthogonalEdgeStyle;" parent="L3" source="M7" target="M8" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="MA6" value="" style="edgeStyle=orthogonalEdgeStyle;" parent="L3" source="M7" target="M9" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="MA7" value="" style="edgeStyle=orthogonalEdgeStyle;" parent="L3" source="M8" target="M10" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="MA8" value="" style="edgeStyle=orthogonalEdgeStyle;" parent="L3" source="M2" target="M5" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="MA9" value="" style="edgeStyle=orthogonalEdgeStyle;" parent="L3" source="M3" target="M4" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="L4" value="Data &amp; Model Store" style="swimlane;fontStyle=1;fontSize=13;startSize=35;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="790" width="1240" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="D1" value="RF Models × 3&#xa;*_model_recruitview.pkl" style="shape=cylinder3;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" parent="L4" vertex="1">
+                    <mxGeometry x="30" y="30" width="160" height="65" as="geometry"/>
+                </mxCell>
+                <mxCell id="D2" value="Calibration Models × 3&#xa;*_calibration.pkl" style="shape=cylinder3;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" parent="L4" vertex="1">
+                    <mxGeometry x="210" y="30" width="160" height="65" as="geometry"/>
+                </mxCell>
+                <mxCell id="D3" value="feature_stats.pkl&#xa;3-sigma clip bounds&#xa;35 features" style="shape=cylinder3;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" parent="L4" vertex="1">
+                    <mxGeometry x="390" y="30" width="150" height="65" as="geometry"/>
+                </mxCell>
+                <mxCell id="D4" value="sessions.db (SQLite)&#xa;Sessions + Responses&#xa;Interview History" style="shape=cylinder3;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="L4" vertex="1">
+                    <mxGeometry x="560" y="30" width="155" height="65" as="geometry"/>
+                </mxCell>
+                <mxCell id="D5" value="recruitview_metadata.csv&#xa;2,011 candidates&#xa;RF-predicted C3 scores" style="shape=cylinder3;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" parent="L4" vertex="1">
+                    <mxGeometry x="735" y="30" width="165" height="65" as="geometry"/>
+                </mxCell>
+                <mxCell id="SA1" value="loads" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#6c8ebf;fontSize=10;" parent="1" source="M6" target="D1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="SA2" value="loads" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#6c8ebf;fontSize=10;" parent="1" source="M7" target="D2" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="SA3" value="loads" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#6c8ebf;fontSize=10;" parent="1" source="M4" target="D3" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="SA4" value="reads/writes" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#82b366;fontSize=10;" parent="1" source="B4" target="D4" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="SA5" value="reads" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#d6b656;fontSize=10;" parent="1" source="B3" target="D5" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="L5" value="Offline Training Pipeline (runs once — not part of live system)" style="swimlane;fontStyle=3;fontSize=12;startSize=35;fillColor=#f8cecc;strokeColor=#b85450;fontColor=#6b0000;dashed=1;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="970" width="1240" height="115" as="geometry"/>
+                </mxCell>
+                <mxCell id="T1" value="RecruitView Dataset&#xa;2,011 video interviews&#xa;Big 5 + transcripts + audio" style="rounded=1;fillColor=#ffffff;strokeColor=#b85450;fontSize=11;" parent="L5" vertex="1">
+                    <mxGeometry x="30" y="38" width="175" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="T2" value="Big 5 Proxy Mapping&#xa;openness → Curiosity&#xa;conscientiousness → CT&#xa;(openness+extraversion)/2 → Creativity" style="rounded=1;fillColor=#ffffff;strokeColor=#b85450;fontSize=11;" parent="L5" vertex="1">
+                    <mxGeometry x="225" y="28" width="195" height="72" as="geometry"/>
+                </mxCell>
+                <mxCell id="T3" value="QuantileTransformer&#xa;Uniform 1–5 distribution&#xa;for Big 5 targets" style="rounded=1;fillColor=#ffffff;strokeColor=#b85450;fontSize=11;" parent="L5" vertex="1">
+                    <mxGeometry x="440" y="38" width="160" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="T4" value="train_big5_proxy_models.py&#xa;Random Forest&#xa;100 trees, max_depth=10" style="rounded=1;fillColor=#ffffff;strokeColor=#b85450;fontSize=11;" parent="L5" vertex="1">
+                    <mxGeometry x="620" y="38" width="175" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="T5" value="train_calibration.py&#xa;Isotonic Regression&#xa;5-fold OOF CV" style="rounded=1;fillColor=#ffffff;strokeColor=#b85450;fontSize=11;" parent="L5" vertex="1">
+                    <mxGeometry x="815" y="38" width="165" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="T6" value="save_feature_stats.py&#xa;3-sigma bounds&#xa;for 35 features" style="rounded=1;fillColor=#ffffff;strokeColor=#b85450;fontSize=11;" parent="L5" vertex="1">
+                    <mxGeometry x="1000" y="38" width="150" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="TA1" value="" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#b85450;" parent="L5" source="T1" target="T2" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="TA2" value="" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#b85450;" parent="L5" source="T2" target="T3" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="TA3" value="" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#b85450;" parent="L5" source="T3" target="T4" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="TA4" value="" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#b85450;" parent="L5" source="T4" target="T5" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="TA5" value="produces" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#b85450;dashed=1;fontSize=10;" parent="1" source="T4" target="D1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="TA6" value="produces" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#b85450;dashed=1;fontSize=10;" parent="1" source="T5" target="D2" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="TA7" value="produces" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#b85450;dashed=1;fontSize=10;" parent="1" source="T6" target="D3" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

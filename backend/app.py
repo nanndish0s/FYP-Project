@@ -13,8 +13,13 @@ import shap
 import sqlite3
 import json
 import uuid
-from datetime import datetime
+import warnings
+from datetime import datetime, timezone
 from pathlib import Path
+
+# Suppress sklearn feature-name warning — models were trained without a DataFrame
+# index; predictions use aligned DataFrames so column order is correct.
+warnings.filterwarnings('ignore', message='X has feature names')
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
@@ -336,8 +341,10 @@ def calibrate_score(raw_score, word_count, vocab_diversity, transcript="", quest
     followed by a research-grounded keyword boost derived from peer-reviewed
     literature on verbal markers of curiosity, critical thinking, and creativity.
     """
-    # Hard validity cap — responses under 20 words have insufficient signal
-    if word_count < 20:
+    # Validity floor — responses under 50 words have insufficient lexical signal
+    # for reliable personality and soft-skill inference (Boyd & Schwartz, 2021,
+    # LIWC-22; Mairesse et al., 2007; Hirsh & Peterson, 2009).
+    if word_count < 50:
         print(f"   [CALIBRATION] Too short ({word_count} words) — capped at 2.4")
         return 2.4
 
@@ -733,7 +740,7 @@ def save_session():
     """Save a completed interview session with all question responses."""
     data = request.json
     session_id = str(uuid.uuid4())
-    created_at = datetime.utcnow().isoformat()
+    created_at = datetime.now(timezone.utc).isoformat()
 
     agg = data.get('aggregateScores', {})
     conn = get_db()
