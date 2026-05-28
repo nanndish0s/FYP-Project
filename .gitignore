@@ -35,3 +35,9 @@ Thumbs.db
 # Model outputs
 models/*.pkl
 models/*.joblib
+
+# Temp audio uploads from live assessment
+data/temp/
+
+# Live session database (runtime state, not source code)
+data/sessions.db
