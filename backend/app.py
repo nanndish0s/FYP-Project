@@ -549,7 +549,7 @@ def assess_audio():
             features['zcr_mean'] = float(np.mean(zcr))
             
         except Exception as e:
-            print(f"❌ Acoustic extraction failed: {e}")
+            print(f"ERROR: Acoustic extraction failed: {e}")
         
         # Lexical features from transcript
         words = transcript.lower().split()
@@ -631,7 +631,7 @@ def assess_audio():
         })
 
     except Exception as e:
-        print(f"❌ Error in assess_audio: {e}")
+        print(f"ERROR: assess_audio failed: {e}")
         import traceback
         traceback.print_exc()
         return jsonify({'error': str(e)}), 500
@@ -717,7 +717,7 @@ def assess_text():
         })
 
     except Exception as e:
-        print(f"❌ Error in assess_text: {e}")
+        print(f"ERROR: assess_text failed: {e}")
         import traceback
         traceback.print_exc()
         return jsonify({'error': str(e)}), 500
