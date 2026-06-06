@@ -151,7 +151,11 @@ export const HistoryPage: React.FC = () => {
                                         <div key={r.id} className="mb-6 last:mb-0">
                                             <p className="text-xs font-semibold text-gray-400 uppercase mb-1">Question {i + 1}</p>
                                             <p className="text-gray-700 font-medium mb-2">{r.question_text}</p>
-                                            <p className="text-sm text-gray-500 italic mb-3">"{r.transcript?.substring(0, 200)}..."</p>
+                                            <p className="text-sm text-gray-500 italic mb-3">
+                                                "{r.transcript && r.transcript.length > 200
+                                                    ? r.transcript.substring(0, 200) + '...'
+                                                    : r.transcript}"
+                                            </p>
                                             <div className="flex gap-6 text-sm mb-4">
                                                 <span className="text-blue-600 font-semibold">Curiosity: {r.curiosity_score?.toFixed(1)}</span>
                                                 <span className="text-purple-600 font-semibold">Critical Thinking: {r.critical_thinking_score?.toFixed(1)}</span>

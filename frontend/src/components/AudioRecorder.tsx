@@ -24,6 +24,9 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
     const streamRef = useRef<MediaStream | null>(null);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const chunksRef = useRef<BlobPart[]>([]);
+    // Ref mirrors isRecording so interval/onstop callbacks see the current value
+    // without stale closure issues.
+    const isRecordingRef = useRef(false);
 
     // Web Audio API refs — used only for waveform visualization
     const audioContextRef = useRef<AudioContext | null>(null);
@@ -101,6 +104,9 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
                     const resampled = downsampleBuffer(pcm, audioBuffer.sampleRate, 16000);
                     const wavBlob = encodeWAV(resampled, 16000);
                     onRecordingComplete(wavBlob);
+                } catch (err) {
+                    console.error('Audio processing failed:', err);
+                    alert('Failed to process recording. Please click Re-record and try again.');
                 } finally {
                     await decodeCtx.close();
                 }
@@ -108,6 +114,7 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
 
             mediaRecorder.start(100); // collect chunks every 100ms
 
+            isRecordingRef.current = true;
             setIsRecording(true);
             setRecordingTime(0);
             if (timeLimit) setTimeRemaining(timeLimit);
@@ -130,7 +137,8 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
     };
 
     const stopRecording = () => {
-        if (!isRecording) return;
+        if (!isRecordingRef.current) return;
+        isRecordingRef.current = false;
         setIsRecording(false);
 
         if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
