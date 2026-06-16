@@ -58,7 +58,7 @@ class LiveFeatureExtractor:
             features[f'mfcc_{i}_mean'] = float(np.mean(mfccs[i]))
             features[f'mfcc_{i}_std'] = float(np.std(mfccs[i]))
         
-        print(f"✅ Extracted {len(features)} acoustic features")
+        print(f" Extracted {len(features)} acoustic features")
         return features
     
     def extract_lexical_features(self, transcript):

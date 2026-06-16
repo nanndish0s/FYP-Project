@@ -41,3 +41,6 @@ data/temp/
 
 # Live session database (runtime state, not source code)
 data/sessions.db
+
+# Claude Code IDE settings (local only)
+.claude/

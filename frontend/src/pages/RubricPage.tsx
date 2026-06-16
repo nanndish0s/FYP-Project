@@ -39,6 +39,8 @@ export const RubricPage: React.FC = () => {
                     iconBg="bg-gradient-to-br from-blue-500 to-cyan-500"
                     isExpanded={expandedSection === 'curiosity'}
                     onToggle={() => toggleSection('curiosity')}
+                    big5Proxy="Openness"
+                    exampleKeywords={['why', 'how does', 'curious', 'wonder', 'explore', 'find out', 'what if', 'investigate']}
                     scoreData={[
                         {
                             score: 1,
@@ -88,6 +90,8 @@ export const RubricPage: React.FC = () => {
                     iconBg="bg-gradient-to-br from-purple-500 to-pink-500"
                     isExpanded={expandedSection === 'critical_thinking'}
                     onToggle={() => toggleSection('critical_thinking')}
+                    big5Proxy="Conscientiousness"
+                    exampleKeywords={['because', 'therefore', 'however', 'evidence', 'root cause', 'evaluate', 'on the other hand', 'systematic']}
                     scoreData={[
                         {
                             score: 1,
@@ -137,6 +141,8 @@ export const RubricPage: React.FC = () => {
                     iconBg="bg-gradient-to-br from-amber-500 to-orange-500"
                     isExpanded={expandedSection === 'creativity'}
                     onToggle={() => toggleSection('creativity')}
+                    big5Proxy="Openness"
+                    exampleKeywords={['what if', 'novel', 'alternative', 'prototype', 'reframe', 'unconventional', 'combined', 'brainstorm']}
                     scoreData={[
                         {
                             score: 1,
@@ -200,6 +206,8 @@ interface RubricSectionProps {
     isExpanded: boolean;
     onToggle: () => void;
     scoreData: ScoreData[];
+    big5Proxy: string;
+    exampleKeywords: string[];
 }
 
 const RubricSection: React.FC<RubricSectionProps> = ({
@@ -209,7 +217,9 @@ const RubricSection: React.FC<RubricSectionProps> = ({
     iconBg,
     isExpanded,
     onToggle,
-    scoreData
+    scoreData,
+    big5Proxy,
+    exampleKeywords
 }) => (
     <section className="mb-8">
         <button
@@ -223,12 +233,23 @@ const RubricSection: React.FC<RubricSectionProps> = ({
                     </div>
                     <div className="flex-1">
                         <h2 className="text-3xl font-bold text-gray-900 mb-2">{title}</h2>
-                        <p className="text-gray-600 leading-relaxed">{definition}</p>
+                        <p className="text-gray-600 leading-relaxed mb-3">{definition}</p>
+                        <div className="flex flex-wrap items-center gap-2">
+                            <span className="px-2.5 py-1 rounded-full bg-violet-100 text-violet-700 text-xs font-semibold">
+                                Big Five Proxy: {big5Proxy}
+                            </span>
+                            <span className="text-xs text-gray-400">Example language that boosts this score:</span>
+                            {exampleKeywords.map(kw => (
+                                <span key={kw} className="px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 text-xs italic">
+                                    "{kw}"
+                                </span>
+                            ))}
+                        </div>
                     </div>
                 </div>
                 <div className="ml-4">
                     {isExpanded ? (
-                        <ChevronUp className="w-6 h -6 text-gray-400" />
+                        <ChevronUp className="w-6 h-6 text-gray-400" />
                     ) : (
                         <ChevronDown className="w-6 h-6 text-gray-400" />
                     )}

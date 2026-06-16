@@ -1,0 +1,4 @@
+trait,best_n_estimators,best_max_depth,best_min_samples_leaf,best_cv_r2,deployed_cv_r2,gap_best_minus_deployed,near_optimal,deployed_config
+curiosity,100,10,4,0.2075,0.1984,0.0091,True,"n_estimators=100, max_depth=10, min_samples_leaf=1"
+critical_thinking,300,15,4,0.157,0.1455,0.0115,False,"n_estimators=100, max_depth=10, min_samples_leaf=1"
+creativity,300,15,2,0.2274,0.2174,0.01,True,"n_estimators=100, max_depth=10, min_samples_leaf=1"

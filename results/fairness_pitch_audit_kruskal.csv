@@ -1,0 +1,7 @@
+trait,metric,H_statistic,p_value,significant_at_0.05
+curiosity,MAE,3.7625,0.2883,False
+curiosity,mean_predicted_score,124.1518,0.0,True
+critical_thinking,MAE,4.3554,0.2256,False
+critical_thinking,mean_predicted_score,79.1169,0.0,True
+creativity,MAE,3.9718,0.2645,False
+creativity,mean_predicted_score,179.7072,0.0,True

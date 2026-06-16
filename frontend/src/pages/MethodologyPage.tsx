@@ -41,7 +41,7 @@ export const MethodologyPage: React.FC = () => {
                             <StepCard
                                 icon={<Activity className="w-8 h-8" />}
                                 title="2. Analysis"
-                                description="Feature Extraction (37)"
+                                description="Feature Extraction (35)"
                                 gradient="from-indigo-500 to-purple-500"
                                 delay="100"
                             />
@@ -114,7 +114,7 @@ export const MethodologyPage: React.FC = () => {
                                     <div className="flex items-start gap-3 mb-4">
                                         <Sparkles className="w-5 h-5 text-purple-600 flex-shrink-0 mt-1" />
                                         <div>
-                                            <h4 className="font-bold text-gray-900 mb-2">37 Features Extracted per Response</h4>
+                                            <h4 className="font-bold text-gray-900 mb-2">35 Features Extracted per Response</h4>
                                             <p className="text-sm text-gray-600">Combining acoustic (how you speak) and lexical (what you say) signals for comprehensive C3 assessment</p>
                                         </div>
                                     </div>
@@ -132,20 +132,18 @@ export const MethodologyPage: React.FC = () => {
                                             'Spectral Centroid (Voice Brightness)',
                                             'Zero-Crossing Rate (Articulation Rate)'
                                         ]}
-                                        tool="librosa + parselmouth"
+                                        tool="librosa"
                                     />
                                     <FeatureBox
                                         title="Lexical Features"
                                         subtitle="What You Say"
                                         gradient="from-blue-500 to-cyan-500"
                                         features={[
-                                            'Word Count & Sentence Count',
                                             'Average Word Length',
                                             'Vocabulary Diversity (Type-Token Ratio)',
                                             'Filler Word Ratio (um, uh, like)',
-                                            'Response via Whisper Transcription'
                                         ]}
-                                        tool="NLP + Whisper"
+                                        tool="Whisper Transcript + NLP"
                                     />
                                 </div>
                             </div>
@@ -177,7 +175,7 @@ export const MethodologyPage: React.FC = () => {
                                     </li>
                                     <li className="flex items-start gap-3">
                                         <Zap className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
-                                        <span><strong>Approach:</strong> Each C3 trait has a dedicated model trained on 37 acoustic and lexical features with 80/20 train-test split and 5-fold cross-validation</span>
+                                        <span><strong>Approach:</strong> Each C3 trait has a dedicated model trained on 35 acoustic and lexical features with 80/20 train-test split and 5-fold cross-validation</span>
                                     </li>
                                 </ul>
                             </div>

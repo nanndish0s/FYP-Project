@@ -31,7 +31,16 @@
                 <mxCell id="F8" value="API Service (api.ts)&#xa;HTTP REST Client" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;" parent="L1" vertex="1">
                     <mxGeometry x="1095" y="65" width="120" height="55" as="geometry"/>
                 </mxCell>
-                <mxCell id="A1" value="HTTP REST (CORS)" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#6c8ebf;fontColor=#003366;fontSize=11;fontStyle=1;" parent="1" source="F8" target="B1" edge="1">
+                <mxCell id="A1" value="HTTP REST (CORS)&#xa;request / JSON response" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#6c8ebf;fontColor=#003366;fontSize=11;fontStyle=1;startArrow=classic;startFill=1;" parent="1" source="F8" target="L2" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="FE1" value="renders scores" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#666666;fontSize=9;" parent="L1" source="F8" target="F6" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="FE2" value="renders explanations" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#666666;fontSize=9;" parent="L1" source="F8" target="F7" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="FE3" value="triggers call" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#666666;fontSize=9;" parent="L1" source="F1" target="F8" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="L2" value="Backend Layer — Flask REST API (Python, port 5000)" style="swimlane;fontStyle=1;fontSize=13;startSize=35;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#1a3a1a;" parent="1" vertex="1">
@@ -100,23 +109,35 @@
                 <mxCell id="MA3" value="" style="edgeStyle=orthogonalEdgeStyle;" parent="L3" source="M4" target="M6" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="MA4" value="" style="edgeStyle=orthogonalEdgeStyle;" parent="L3" source="M6" target="M7" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
                 <mxCell id="MA5" value="" style="edgeStyle=orthogonalEdgeStyle;" parent="L3" source="M7" target="M8" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="MA6" value="" style="edgeStyle=orthogonalEdgeStyle;" parent="L3" source="M7" target="M9" edge="1">
+                <mxCell id="MA6" value="feature vector (parallel)" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;dashed=1;strokeColor=#6c8ebf;" parent="L3" source="M4" target="M9" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="MA7" value="" style="edgeStyle=orthogonalEdgeStyle;" parent="L3" source="M8" target="M10" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="MA8" value="" style="edgeStyle=orthogonalEdgeStyle;" parent="L3" source="M2" target="M5" edge="1">
+                <mxCell id="MA8" value="" style="edgeStyle=orthogonalEdgeStyle;" parent="L3" source="M6" target="M5" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="MA9" value="" style="edgeStyle=orthogonalEdgeStyle;" parent="L3" source="M3" target="M4" edge="1">
+                <mxCell id="MA9" value="bypasses clipping" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;dashed=1;" parent="L3" source="M3" target="M6" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="MA10" value="valid (&#8805;50 words)" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;" parent="L3" source="M5" target="M7" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="MA11" value="invalid &#8594; floor 2.4" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;dashed=1;strokeColor=#b85450;" parent="L3" source="M5" target="M10" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="RT1" value="returns scores + explanations" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;dashed=1;strokeColor=#82b366;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="M10" target="B1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1152" y="710"/>
+                            <mxPoint x="25" y="710"/>
+                            <mxPoint x="25" y="305"/>
+                        </Array>
+                    </mxGeometry>
                 </mxCell>
                 <mxCell id="L4" value="Data &amp; Model Store" style="swimlane;fontStyle=1;fontSize=13;startSize=35;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" parent="1" vertex="1">
                     <mxGeometry x="40" y="790" width="1240" height="120" as="geometry"/>
@@ -133,7 +154,7 @@
                 <mxCell id="D4" value="sessions.db (SQLite)&#xa;Sessions + Responses&#xa;Interview History" style="shape=cylinder3;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="L4" vertex="1">
                     <mxGeometry x="560" y="30" width="155" height="65" as="geometry"/>
                 </mxCell>
-                <mxCell id="D5" value="recruitview_metadata.csv&#xa;2,011 candidates&#xa;RF-predicted C3 scores" style="shape=cylinder3;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" parent="L4" vertex="1">
+                <mxCell id="D5" value="recruitview_metadata.csv&#xa;2,011 candidates&#xa;Big 5 scores +&#xa;RF-predicted C3 scores" style="shape=cylinder3;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" parent="L4" vertex="1">
                     <mxGeometry x="735" y="30" width="165" height="65" as="geometry"/>
                 </mxCell>
                 <mxCell id="SA1" value="loads" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#6c8ebf;fontSize=10;" parent="1" source="M6" target="D1" edge="1">

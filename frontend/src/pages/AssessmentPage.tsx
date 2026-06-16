@@ -391,7 +391,7 @@ export const AssessmentPage: React.FC = () => {
                             Analyzing Your Responses
                         </h2>
                         <p className="text-lg text-gray-600 mb-8">
-                            Our AI is processing your response through 37 acoustic and lexical features
+                            Our AI is processing your response through 35 acoustic and lexical features
                         </p>
                         <div className="flex justify-center gap-2">
                             <div className="w-3 h-3 bg-primary-500 rounded-full animate-bounce"></div>

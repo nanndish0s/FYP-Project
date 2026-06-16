@@ -1,0 +1,13 @@
+trait,pitch_quartile,n,mae,mean_predicted_score
+curiosity,Q1 (lowest pitch),503,0.8092,3.184
+curiosity,Q2,503,0.8799,3.015
+curiosity,Q3,502,0.8664,2.984
+curiosity,Q4 (highest pitch),503,0.8383,2.817
+critical_thinking,Q1 (lowest pitch),503,0.8334,3.123
+critical_thinking,Q2,503,0.8876,3.003
+critical_thinking,Q3,502,0.8845,3.006
+critical_thinking,Q4 (highest pitch),503,0.9133,2.867
+creativity,Q1 (lowest pitch),503,0.7163,3.234
+creativity,Q2,503,0.7671,3.026
+creativity,Q3,502,0.8066,2.954
+creativity,Q4 (highest pitch),503,0.7362,2.786

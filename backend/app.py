@@ -244,7 +244,7 @@ def get_shap_explanation(trait_name, feature_df, top_n=5):
 # Keywords derived from peer-reviewed literature (2020–2025):
 # Curiosity:         Boyd & Schwartz (2021), Ceraolo et al. (2025),
 #                    Sadler-Smith & Akstinaite (2022)
-# Critical Thinking: Yang et al. (2023), Lohmann et al. (2024),
+# Critical Thinking: Yang et al. (2023), Lohmann et al. (2024), 
 #                    Kharchenko et al. (2025)
 # Creativity:        Ahmed & Feist (2021), López Martínez et al. (2024)
 RESEARCH_KEYWORDS = {

@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(python -c ' *)",
-      "Bash(python -c \"import pickle; from pathlib import Path; [print\\(t, 'OK'\\) for t in ['curiosity','critical_thinking','creativity'] for f in [Path\\('models'\\)/f'{t}_model_recruitview.pkl', Path\\('models'\\)/f'{t}_calibration.pkl'] if print\\(f.name, 'EXISTS' if f.exists\\(\\) else 'MISSING'\\)]\")"
-    ]
-  }
-}

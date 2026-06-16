@@ -26,6 +26,15 @@ export const HistoryPage: React.FC = () => {
     const [detail, setDetail] = useState<SessionDetail | null>(null);
     const [detailLoading, setDetailLoading] = useState(false);
     const [deleting, setDeleting] = useState<string | null>(null);
+    const [expandedTranscripts, setExpandedTranscripts] = useState<Set<string>>(new Set());
+
+    const toggleTranscript = (id: string) => {
+        setExpandedTranscripts(prev => {
+            const next = new Set(prev);
+            if (next.has(id)) next.delete(id); else next.add(id);
+            return next;
+        });
+    };
 
     useEffect(() => { loadSessions(); }, []);
 
@@ -152,9 +161,17 @@ export const HistoryPage: React.FC = () => {
                                             <p className="text-xs font-semibold text-gray-400 uppercase mb-1">Question {i + 1}</p>
                                             <p className="text-gray-700 font-medium mb-2">{r.question_text}</p>
                                             <p className="text-sm text-gray-500 italic mb-3">
-                                                "{r.transcript && r.transcript.length > 200
+                                                "{r.transcript && r.transcript.length > 200 && !expandedTranscripts.has(r.id)
                                                     ? r.transcript.substring(0, 200) + '...'
                                                     : r.transcript}"
+                                                {r.transcript && r.transcript.length > 200 && (
+                                                    <button
+                                                        onClick={() => toggleTranscript(r.id)}
+                                                        className="ml-2 not-italic text-primary-600 hover:text-primary-700 font-semibold text-xs"
+                                                    >
+                                                        {expandedTranscripts.has(r.id) ? 'Show less' : 'Show more'}
+                                                    </button>
+                                                )}
                                             </p>
                                             <div className="flex gap-6 text-sm mb-4">
                                                 <span className="text-blue-600 font-semibold">Curiosity: {r.curiosity_score?.toFixed(1)}</span>
